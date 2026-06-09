@@ -1,21 +1,10 @@
---[[
-    modules/Border.lua — AeonoPlates
-    Кастомная граница с цветами: target, mouseover, combat, default.
-    Всегда видна (показывается с нейтральным цветом, если ничего не применилось).
-    
-    Оптимизации:
-    - Кэширование backdrop: пересоздаётся только при смене текстуры/размеров
-    - Кэширование цветов: распаковываются один раз при смене профиля
-    - Разделение обновления геометрии (тяжёлое) и цвета (лёгкое)
-]]
-
 local _cachedBorderColors = {}
 
 function RefreshBorderColorCache(db)
-    _cachedBorderColors.targetColor    = safeUnpackColor(db.borderTargetColor, 1, 1, 1, 1)
+    _cachedBorderColors.targetColor = safeUnpackColor(db.borderTargetColor, 1, 1, 1, 1)
     _cachedBorderColors.mouseoverColor = safeUnpackColor(db.borderMouseoverColor, 1, 1, 1, 1)
-    _cachedBorderColors.combatColor    = safeUnpackColor(db.borderCombatColor, 1, 0.5, 0, 1)
-    _cachedBorderColors.defaultColor   = safeUnpackColor(db.borderDefaultColor, 0.3, 0.3, 0.3, 1)
+    _cachedBorderColors.combatColor = safeUnpackColor(db.borderCombatColor, 1, 0.5, 0, 1)
+    _cachedBorderColors.defaultColor = safeUnpackColor(db.borderDefaultColor, 0.3, 0.3, 0.3, 1)
 end
 
 function UpdateBorderGeometry(frame, db)
@@ -37,13 +26,20 @@ function UpdateBorderGeometry(frame, db)
             edgeSize = edge,
             bgFile = nil,
             tile = false,
-            insets = { left = 0, right = 0, top = 0, bottom = 0 }
+            insets = {
+                left = 0,
+                right = 0,
+                top = 0,
+                bottom = 0
+            }
         })
     end
 end
 
 function UpdateCustomBorder(frame, data, db)
-    if not frame.healthBar then return end
+    if not frame.healthBar then
+        return
+    end
 
     if not frame.customBorder then
         frame.customBorder = CreateFrame("Frame", nil, frame)
@@ -75,19 +71,25 @@ function UpdateCustomBorder(frame, data, db)
 
     -- Приоритет 1: Цель
     if isTarget then
-        frame.customBorder:SetBackdropBorderColor(colors.targetColor[1], colors.targetColor[2], colors.targetColor[3], colors.targetColor[4])
+        frame.customBorder:SetBackdropBorderColor(colors.targetColor[1], colors.targetColor[2], colors.targetColor[3],
+            colors.targetColor[4])
         frame.customBorder:Show()
-    -- Приоритет 2: Mouseover (только если не равен цели)
+        -- Приоритет 2: Mouseover (только если не равен цели)
+
     elseif isMouseover and not isTarget then
-        frame.customBorder:SetBackdropBorderColor(colors.mouseoverColor[1], colors.mouseoverColor[2], colors.mouseoverColor[3], colors.mouseoverColor[4])
+        frame.customBorder:SetBackdropBorderColor(colors.mouseoverColor[1], colors.mouseoverColor[2],
+            colors.mouseoverColor[3], colors.mouseoverColor[4])
         frame.customBorder:Show()
-    -- Приоритет 3: Юнит в бою
+        -- Приоритет 3: Юнит в бою
+
     elseif inCombat then
-        frame.customBorder:SetBackdropBorderColor(colors.combatColor[1], colors.combatColor[2], colors.combatColor[3], colors.combatColor[4])
+        frame.customBorder:SetBackdropBorderColor(colors.combatColor[1], colors.combatColor[2], colors.combatColor[3],
+            colors.combatColor[4])
         frame.customBorder:Show()
-    -- Приоритет 4: Default — всегда показываем с нейтральным цветом
+        -- Приоритет 4: Default — всегда показываем с нейтральным цветом
     else
-        frame.customBorder:SetBackdropBorderColor(colors.defaultColor[1], colors.defaultColor[2], colors.defaultColor[3], colors.defaultColor[4])
+        frame.customBorder:SetBackdropBorderColor(colors.defaultColor[1], colors.defaultColor[2],
+            colors.defaultColor[3], colors.defaultColor[4])
         frame.customBorder:Show()
     end
 end
