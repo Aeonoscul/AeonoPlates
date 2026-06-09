@@ -873,24 +873,6 @@ local options = {
                     set = function(info, val) AeonoPlates.db.profile.castBarIconSide = val; AeonoPlates:RefreshAllPlates() end,
                     get = function(info) return AeonoPlates.db.profile.castBarIconSide end,
                 },
-                castBarIconOffsetX = {
-                    type = "range",
-                    name = "Смещение иконки X",
-                    desc = "Смещение иконки по X",
-                    order = 79,
-                    min = -20, max = 20, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.castBarIconOffsetX = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarIconOffsetX end,
-                },
-                castBarIconOffsetY = {
-                    type = "range",
-                    name = "Смещение иконки Y",
-                    desc = "Смещение иконки по Y",
-                    order = 80,
-                    min = -20, max = 20, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.castBarIconOffsetY = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarIconOffsetY end,
-                },
                 spacer2 = { type = "description", name = "", order = 81 },
 
                 -- Position
