@@ -1,0 +1,34 @@
+<Ui>
+	<!-- Libraries -->
+	<Script file="lib\LibStub\LibStub.lua"/>
+	<Include file="lib\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
+	<Include file="lib\AceAddon-3.0\AceAddon-3.0.xml"/>
+	<Include file="lib\AceEvent-3.0\AceEvent-3.0.xml"/>
+	<Include file="lib\AceHook-3.0\AceHook-3.0.xml"/>
+	<Include file="lib\AceDB-3.0\AceDB-3.0.xml"/>
+	<Include file="lib\AceConsole-3.0\AceConsole-3.0.xml"/>
+	<Include file="lib\AceGUI-3.0\AceGUI-3.0.xml"/>
+	<Include file="lib\AceConfig-3.0\AceConfig-3.0.xml"/>
+	<Include file="lib\AceDBOptions-3.0\AceDBOptions-3.0.xml"/>
+	<Script file="lib\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
+	<Include file="lib\LibDBIcon-1.0\lib.xml"/>
+	<!-- Core & Utilities -->
+	<Script file="shared.lua"/>
+
+	<!-- Modules -->
+	<Script file="modules\Name.lua"/>
+	<Script file="modules\Health.lua"/>
+	<Script file="modules\Icon.lua"/>
+	<Script file="modules\Border.lua"/>
+	<Script file="modules\Threat.lua"/>
+	<Script file="modules\Classification.lua"/>
+	<Script file="modules\RaidTarget.lua"/>
+	<Script file="modules\Scale.lua"/>
+	<Script file="modules\CastBar.lua"/>
+
+	<!-- Main (ДО options.lua, чтобы глобал AeonoPlates был доступен) -->
+	<Script file="core.lua"/>
+
+	<!-- Options -->
+	<Script file="options.lua"/>
+</Ui>

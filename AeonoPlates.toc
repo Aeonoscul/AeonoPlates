@@ -1,0 +1,9 @@
+## Interface: 30300
+## Title: AeonoPlates
+## Notes: Кастомизация неймплейтов с поддержкой Legion/DF бекпорта
+## Author: Пользователь
+## Version: 1.0.0
+## LoadOn: PLAYER_LOGIN
+## SavedVariables: AeonoPlatesDB
+
+AeonoPlates.xml
