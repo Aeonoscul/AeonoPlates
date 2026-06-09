@@ -266,6 +266,13 @@ local function ResetMouseoverState()
                 cb.container:SetFrameLevel(prev:GetFrameLevel() + 1)
             end
         end
+        -- Сброс цвета границы: получаем полные данные юнита и вызываем UpdateCustomBorder
+        if prev then
+            local data = GetUnitData(prev)
+            if data then
+                UpdateCustomBorder(prev, data, AeonoPlates.db.profile)
+            end
+        end
         _prevMouseoverFrame = nil
     end
 end
@@ -652,6 +659,13 @@ function AeonoPlates:OnEnable()
                     local cb = prev._pureCB
                     if cb and cb.container then
                         cb.container:SetFrameLevel(prev:GetFrameLevel() + 1)
+                    end
+                end
+                -- Сброс цвета границы: получаем полные данные юнита и вызываем UpdateCustomBorder
+                if prev then
+                    local data = GetUnitData(prev)
+                    if data then
+                        UpdateCustomBorder(prev, data, AeonoPlates.db.profile)
                     end
                 end
                 _prevMouseoverFrame = nil
