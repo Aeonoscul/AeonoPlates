@@ -52,8 +52,6 @@ function UpdateCastBarPosition(cb, db)
     local height = db.castBarHeight or 8
     local showIcon = db.castBarShowIcon
     local iconSide = db.castBarIconSide or "LEFT"
-    local iconOffX = db.castBarIconOffsetX or 0
-    local iconOffY = db.castBarIconOffsetY or 0
 
     -- Позиционируем контейнер относительно healthBar
     container:ClearAllPoints()
@@ -71,12 +69,12 @@ function UpdateCastBarPosition(cb, db)
 
             -- Иконка: привязана к левому краю контейнера
             cb.icon:ClearAllPoints()
-            cb.icon:SetPoint("LEFT", container, "LEFT", iconOffX, iconOffY)
+            cb.icon:SetPoint("LEFT", container, "LEFT", 0, 0)
             cb.icon:SetSize(iconSize, iconSize)
             cb.icon:Show()
 
             -- Кастбар: справа от иконки, на всю оставшуюся ширину
-            local barWidth = width - iconSize - iconOffX
+            local barWidth = width - iconSize
             if barWidth < 1 then barWidth = 1 end
             cb:ClearAllPoints()
             cb:SetPoint("LEFT", cb.icon, "RIGHT", 0, 0)
@@ -89,13 +87,13 @@ function UpdateCastBarPosition(cb, db)
             -- Кастбар: привязан к левому краю контейнера
             cb:ClearAllPoints()
             cb:SetPoint("LEFT", container, "LEFT", 0, 0)
-            local barWidth = width - iconSize - iconOffX
+            local barWidth = width - iconSize
             if barWidth < 1 then barWidth = 1 end
             cb:SetSize(barWidth, height)
 
             -- Иконка: справа от кастбара
             cb.icon:ClearAllPoints()
-            cb.icon:SetPoint("LEFT", cb, "RIGHT", iconOffX, iconOffY)
+            cb.icon:SetPoint("LEFT", cb, "RIGHT", 0, 0)
             cb.icon:SetSize(iconSize, iconSize)
             cb.icon:Show()
         end
