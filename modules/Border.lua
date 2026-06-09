@@ -19,6 +19,7 @@ function RefreshBorderColorCache(db)
 end
 
 function UpdateBorderGeometry(frame, db)
+function UpdateBorderGeometry(frame, db)
     local tex = db.borderTexture or "Interface\\Buttons\\WHITE8X8"
     local edge = db.borderPadding or 4
     local size = db.borderThickness or 8
@@ -78,14 +79,19 @@ function UpdateCustomBorder(frame, data, db)
         frame.customBorder:SetBackdropBorderColor(colors.targetColor[1], colors.targetColor[2], colors.targetColor[3], colors.targetColor[4])
         frame.customBorder:Show()
     -- Приоритет 2: Mouseover (только если не равен цели)
+
     elseif isMouseover and not isTarget then
         frame.customBorder:SetBackdropBorderColor(colors.mouseoverColor[1], colors.mouseoverColor[2], colors.mouseoverColor[3], colors.mouseoverColor[4])
         frame.customBorder:Show()
     -- Приоритет 3: Юнит в бою
+
     elseif inCombat then
         frame.customBorder:SetBackdropBorderColor(colors.combatColor[1], colors.combatColor[2], colors.combatColor[3], colors.combatColor[4])
         frame.customBorder:Show()
     -- Приоритет 4: Default — всегда показываем с нейтральным цветом
+    else
+        frame.customBorder:SetBackdropBorderColor(colors.defaultColor[1], colors.defaultColor[2], colors.defaultColor[3], colors.defaultColor[4])
+        frame.customBorder:Show()
     else
         frame.customBorder:SetBackdropBorderColor(colors.defaultColor[1], colors.defaultColor[2], colors.defaultColor[3], colors.defaultColor[4])
         frame.customBorder:Show()
