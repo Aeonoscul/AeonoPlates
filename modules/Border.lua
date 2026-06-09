@@ -8,6 +8,7 @@
     - Кэширование цветов: распаковываются один раз при смене профиля
     - Разделение обновления геометрии (тяжёлое) и цвета (лёгкое)
 ]]--
+]]--
 
 local _cachedBorderColors = {}
 
@@ -18,6 +19,7 @@ function RefreshBorderColorCache(db)
     _cachedBorderColors.defaultColor   = safeUnpackColor(db.borderDefaultColor, 0.3, 0.3, 0.3, 1)
 end
 
+function UpdateBorderGeometry(frame, db)
 function UpdateBorderGeometry(frame, db)
     local tex = db.borderTexture or "Interface\\Buttons\\WHITE8X8"
     local edge = db.borderPadding or 4
@@ -79,13 +81,19 @@ function UpdateCustomBorder(frame, data, db)
         frame.customBorder:Show()
     -- Приоритет 2: Mouseover (только если не равен цели)
     elseif isMouseover and not isTarget then
+    elseif isMouseover and not isTarget then
         frame.customBorder:SetBackdropBorderColor(colors.mouseoverColor[1], colors.mouseoverColor[2], colors.mouseoverColor[3], colors.mouseoverColor[4])
         frame.customBorder:Show()
     -- Приоритет 3: Юнит в бою
     elseif inCombat then
+    elseif inCombat then
         frame.customBorder:SetBackdropBorderColor(colors.combatColor[1], colors.combatColor[2], colors.combatColor[3], colors.combatColor[4])
         frame.customBorder:Show()
     -- Приоритет 4: Default — всегда показываем с нейтральным цветом
+    else
+        frame.customBorder:SetBackdropBorderColor(colors.defaultColor[1], colors.defaultColor[2], colors.defaultColor[3], colors.defaultColor[4])
+        frame.customBorder:Show()
+    end
     else
         frame.customBorder:SetBackdropBorderColor(colors.defaultColor[1], colors.defaultColor[2], colors.defaultColor[3], colors.defaultColor[4])
         frame.customBorder:Show()
