@@ -493,7 +493,7 @@ local options = {
                     name = "Размер границы",
                     desc = "Отступ границы от края полосы здоровья",
                     order = 20,
-                    min = 0, max = 20, step = 1,
+                    min = 1, max = 20, step = 1,
                     set = function(info, val) AeonoPlates.db.profile.borderPadding = val; AeonoPlates:RefreshAllPlates() end,
                     get = function(info) return AeonoPlates.db.profile.borderPadding end,
                 },
