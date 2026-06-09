@@ -43,7 +43,7 @@ function UpdateCastBarPosition(cb, db)
     -- в той же иерархии, что и неймплейт, чтобы не перекрывать соседние фреймы)
     local parent = container:GetParent()
     if parent then
-        container:SetFrameLevel(parent:GetFrameLevel() + 1)
+        container:SetFrameLevel(parent:GetFrameLevel() )
     end
 
     local anchor = db.castBarAnchor or "CENTER"
@@ -129,10 +129,9 @@ function CreatePureCastBar(plate, db)
     local parent = plate.UnitFrame or plate
 
     -- Создаём контейнер — именно он позиционируется относительно healthBar
-    -- FrameLevel = parent + 1, чтобы кастбар был выше родителя, но не перекрывал
     -- соседние неймплейты (наследует иерархию уровней фреймов)
     local container = CreateFrame("Frame", nil, parent)
-    container:SetFrameLevel(parent:GetFrameLevel() + 1)
+    container:SetFrameLevel(parent:GetFrameLevel())
 
     -- Создаём кастбар как дочерний элемент контейнера
     local cb = CreateFrame("StatusBar", nil, container)
