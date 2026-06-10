@@ -237,7 +237,7 @@ local function UpdateMouseoverFrameLevel(frame, data)
         -- Поднимаем frame level кастбара вместе с фреймом
         local cb = frame._pureCB
         if cb and cb.container then
-            cb.container:SetFrameLevel(frame:GetFrameLevel() + 1)
+            cb.container:SetFrameLevel(frame:GetFrameLevel())
         end
     else
         if frame._origFrameLevel then
@@ -247,7 +247,7 @@ local function UpdateMouseoverFrameLevel(frame, data)
             -- Восстанавливаем frame level кастбара
             local cb = frame._pureCB
             if cb and cb.container then
-                cb.container:SetFrameLevel(frame:GetFrameLevel() + 1)
+                cb.container:SetFrameLevel(frame:GetFrameLevel())
             end
         end
     end
@@ -263,7 +263,7 @@ local function ResetMouseoverState()
             -- Восстанавливаем frame level кастбара
             local cb = prev._pureCB
             if cb and cb.container then
-                cb.container:SetFrameLevel(prev:GetFrameLevel() + 1)
+                cb.container:SetFrameLevel(prev:GetFrameLevel())
             end
         end
         -- Сброс цвета границы: получаем полные данные юнита и вызываем UpdateCustomBorder
@@ -346,7 +346,7 @@ function AeonoPlates:UpdateStyle(frame)
     UpdateUnitIcon(frame, data, db)
     UpdateClassification(frame, data, db)
     UpdateRaidTarget(frame, data, db)
-    UpdateFrameScale(frame, data, db)
+    --UpdateFrameScale(frame, data, db)
     UpdateMouseoverFrameLevel(frame, data)
     UpdateCustomBorder(frame, data, db)
     UpdateThreatIndicator(frame, data, db)
@@ -658,7 +658,7 @@ function AeonoPlates:OnEnable()
                     -- Восстанавливаем frame level кастбара
                     local cb = prev._pureCB
                     if cb and cb.container then
-                        cb.container:SetFrameLevel(prev:GetFrameLevel() + 1)
+                        cb.container:SetFrameLevel(prev:GetFrameLevel())
                     end
                 end
                 -- Сброс цвета границы: получаем полные данные юнита и вызываем UpdateCustomBorder

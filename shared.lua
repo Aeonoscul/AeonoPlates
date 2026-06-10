@@ -172,7 +172,6 @@ function SetIconST(obj, path, w, h, anchor, anchorFrame, relAnchor, x, y, alpha)
 
     obj:SetTexture(path)
     obj:SetSize(w, h)
-    obj:SetDrawLayer("BACKGROUND", 7)
 
     if obj.lastAnchor ~= anchor or obj.lastRelAnchor ~= relAnchor or obj.lastX ~= x or obj.lastY ~= y or obj.lastParent ~= anchorFrame then
         obj:ClearAllPoints()

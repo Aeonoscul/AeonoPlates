@@ -28,7 +28,7 @@ function UpdateUnitIcon(frame, data, db)
         local parent = frame
 
         if not frame.classIcon then
-            frame.classIcon = parent:CreateTexture(nil, "ARTWORK")
+            frame.classIcon = parent:CreateTexture(nil, "BACKGROUND")
         end
 
         if frame.classIcon:GetParent() ~= parent then

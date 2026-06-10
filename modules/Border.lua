@@ -50,7 +50,7 @@ function UpdateCustomBorder(frame, data, db)
     if nativeBorder then
         frame.customBorder:SetFrameLevel(nativeBorder:GetFrameLevel())
     else
-        frame.customBorder:SetFrameLevel(frame.healthBar:GetFrameLevel() + 1)
+        frame.customBorder:SetFrameLevel(frame.healthBar:GetFrameLevel())
     end
 
     UpdateBorderGeometry(frame, db)
