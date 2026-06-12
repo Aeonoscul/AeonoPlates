@@ -270,15 +270,15 @@ function UpdateCastBarState(unit, isStart, isChannel, db)
 
     if isPlayer then
         if isFriend then
-            show = settings.friendlyPlayerCastBar
+            show = db.friendlyPlayerCastBar
         else
-            show = settings.enemyPlayerCastBar
+            show = db.enemyPlayerCastBar
         end
     else
         if isFriend then
-            show = settings.friendlyNpcCastBar
+            show = db.friendlyNpcCastBar
         else
-            show = settings.enemyNpcCastBar
+            show = db.enemyNpcCastBar
         end
     end
 
