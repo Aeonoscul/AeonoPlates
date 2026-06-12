@@ -405,7 +405,7 @@ function AeonoPlates:OnUnitCombat(event, unit, action)
         if guid then
             local now = GetTime()
             local last = combatThrottle[guid]
-            if not last or (now - last) > 0.08 then
+            if not last or (now - last) > 0.05 then
                 combatThrottle[guid] = now
                 local frame = C_NamePlate.GetNamePlateForUnit(unit)
                 if frame then
@@ -575,6 +575,8 @@ function AeonoPlates:OnProfileChanged(event, database, newProfileKey)
     self:RefreshAllPlates()
 end
 
+-- ... весь код до OnEnable без изменений ...
+
 function AeonoPlates:OnEnable()
     -- Регистрация настроек в AceConfig (здесь options.lua уже загружен)
     local options = self:GetOptionsTable()
@@ -583,14 +585,13 @@ function AeonoPlates:OnEnable()
         LibStub("AceConfigDialog-3.0"):AddToBlizOptions("AeonoPlates", "AeonoPlates")
         LibStub("AceConfigDialog-3.0"):SetDefaultSize("AeonoPlates", 420, 700)
 
-        -- Вкладка профилей через AceDBOptions-3.0
         local AceDBOptions = LibStub("AceDBOptions-3.0", true)
         if AceDBOptions then
             options.args.profile = AceDBOptions:GetOptionsTable(self.db)
         end
     end
 
-    -- Регистрация событий
+    -- Регистрация событий (без изменений)
     self:RegisterEvent("NAME_PLATE_UNIT_ADDED", "OnNamePlateAdded")
     self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", "OnNamePlateRemoved")
     self:RegisterEvent("UNIT_COMBAT", "OnUnitCombat")
@@ -603,7 +604,6 @@ function AeonoPlates:OnEnable()
     self:RegisterEvent("PLAYER_DUEL_START", "OnDuelEvent")
     self:RegisterEvent("PLAYER_DUEL_FINISHED", "OnDuelEvent")
 
-    -- Регистрация событий кастбара
     self:RegisterEvent("UNIT_SPELLCAST_START", "OnUnitSpellcastStart")
     self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "OnUnitSpellcastChannelStart")
     self:RegisterEvent("UNIT_SPELLCAST_STOP", "OnUnitSpellcastStop")
@@ -611,10 +611,9 @@ function AeonoPlates:OnEnable()
     self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "OnUnitSpellcastInterrupted")
     self:RegisterEvent("UNIT_SPELLCAST_FAILED", "OnUnitSpellcastFailed")
 
-    -- Иконка миникарты через LibDBIcon-1.0
     self:RegisterMinimapIcon()
 
-    -- Хуки
+    -- Хуки (без изменений)
     if CompactUnitFrame_UpdateName then
         self:SecureHook("CompactUnitFrame_UpdateName", function(frame)
             HideName(frame)
@@ -633,20 +632,19 @@ function AeonoPlates:OnEnable()
         end)
     end
 
-    -- DF UI hook (может отсутствовать на 3.3.5)
     if CastingBarFrame_UpdateShownState then
         self:SecureHook("CastingBarFrame_UpdateShownState", function(frame)
             HideCastBar(frame)
         end)
     end
 
-    -- OnUpdate-поллинг для mouseover (страховка)
+    -- OnUpdate-поллинг для mouseover (страховка) — без изменений
     if not self._mouseoverPollFrame then
         local pollFrame = CreateFrame("Frame")
         local lastCheck = 0
         pollFrame:SetScript("OnUpdate", function()
             local now = GetTime()
-            if now - lastCheck < 0.2 then return end
+            if now - lastCheck < 0.1 then return end
             lastCheck = now
 
             if not UnitExists("mouseover") and _prevMouseoverFrame then
@@ -655,13 +653,11 @@ function AeonoPlates:OnEnable()
                     prev:SetFrameLevel(prev._origFrameLevel)
                     prev._origFrameLevel = nil
 
-                    -- Восстанавливаем frame level кастбара
                     local cb = prev._pureCB
                     if cb and cb.container then
                         cb.container:SetFrameLevel(prev:GetFrameLevel())
                     end
                 end
-                -- Сброс цвета границы: получаем полные данные юнита и вызываем UpdateCustomBorder
                 if prev then
                     local data = GetUnitData(prev)
                     if data then
@@ -674,35 +670,23 @@ function AeonoPlates:OnEnable()
         self._mouseoverPollFrame = pollFrame
     end
 
-    -- OnUpdate-фрейм для анимации кастбара
-    if not self._castBarUpdateFrame then
-        local cbFrame = CreateFrame("Frame")
-        local db = self.db.profile
-        cbFrame:SetScript("OnUpdate", function(_, elapsed)
-            CastBarOnUpdate(elapsed, db)
-        end)
-        self._castBarUpdateFrame = cbFrame
-    end
+    -- ВОТ ЗДЕСЬ ЗАМЕНА: создаём динамический OnUpdate-фрейм для кастбара
+    CreateCastBarUpdateFrame()
 
     -- Полный рефреш при старте
     self:RefreshAllPlates()
 end
 
 function AeonoPlates:OnDisable()
-    -- Снимаем хуки
     self:UnhookAll()
-    -- Отписываемся от событий
     self:UnregisterAllEvents()
-    -- Останавливаем поллинг
+
     if self._mouseoverPollFrame then
         self._mouseoverPollFrame:SetScript("OnUpdate", nil)
         self._mouseoverPollFrame = nil
     end
-    -- Останавливаем кастбар OnUpdate
-    if self._castBarUpdateFrame then
-        self._castBarUpdateFrame:SetScript("OnUpdate", nil)
-        self._castBarUpdateFrame = nil
-    end
+
+    -- Очищаем активные бары (OnUpdate-фрейм сам скроется)
     ClearActiveCastBars()
 end
 

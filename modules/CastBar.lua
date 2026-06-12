@@ -1,15 +1,14 @@
 --[[
     modules/CastBar.lua — AeonoPlates
-    Кастомный кастбар для неймплейтов
-    Адаптировано из WeakAura-аддона "new/new — копия.lua"
+    Кастомный кастбар с динамическим OnUpdate и обновлением настроек на лету
 ]]
 
 local activeBars = {}
+local updateFrame = nil
+local updateFrameActive = false
 
--- Кэшированные распакованные цвета кастбара (избегаем safeUnpackColor в горячем пути)
 local _cachedCastBarColors = {}
 
--- Обновление кэша цветов кастбара (вызывается при смене профиля)
 function RefreshCastBarColorCache(db)
     _cachedCastBarColors.castBar    = safeUnpackColor(db.castBarColor, 1, 1, 1, 1)
     _cachedCastBarColors.successBar = safeUnpackColor(db.castBarSuccessColor, 0, 1, 0, 1)
@@ -19,7 +18,6 @@ function RefreshCastBarColorCache(db)
     _cachedCastBarColors.nameColor  = safeUnpackColor(db.castNameColor, 1, 1, 1, 1)
 end
 
--- Применение цвета к статус-бару
 local function ApplyColor(cb, colorTable)
     if not cb or not colorTable then return end
     cb:SetStatusBarColor(colorTable[1], colorTable[2], colorTable[3], colorTable[4])
@@ -29,9 +27,8 @@ local function ApplyColor(cb, colorTable)
     end
 end
 
--- Обновление позиции кастбара (вызывается при создании и при изменении настроек)
--- Теперь позиционирует контейнер, внутри раскладывает иконку и кастбар
-function UpdateCastBarPosition(cb, db)
+-- Обновление всех настроек кастбара (позиция, текстура, шрифты, цвета)
+function UpdateCastBarSettings(cb, db)
     if not cb or not db then return end
     local hb = cb._healthBar
     if not hb then return end
@@ -39,11 +36,9 @@ function UpdateCastBarPosition(cb, db)
     local container = cb.container
     if not container then return end
 
-    -- Синхронизируем frame level контейнера с родителем (кастбар должен быть
-    -- в той же иерархии, что и неймплейт, чтобы не перекрывать соседние фреймы)
     local parent = container:GetParent()
     if parent then
-        container:SetFrameLevel(parent:GetFrameLevel() )
+        container:SetFrameLevel(parent:GetFrameLevel())
     end
 
     local anchor = db.castBarAnchor or "CENTER"
@@ -53,85 +48,83 @@ function UpdateCastBarPosition(cb, db)
     local showIcon = db.castBarShowIcon
     local iconSide = db.castBarIconSide or "LEFT"
 
-    -- Позиционируем контейнер относительно healthBar
     container:ClearAllPoints()
     container:SetPoint(anchor, hb, relAnchor, db.castBarOffsetX, db.castBarOffsetY)
 
-    if showIcon then
-        -- Иконка квадратная, размер = высота бара
-        local iconSize = height
+    cb:SetStatusBarTexture(db.castBarTex)
 
+    if showIcon then
+        local iconSize = height
         if iconSide == "LEFT" then
-            -- Иконка слева, кастбар справа
-            -- Контейнер: ширина = castBarWidth (включает иконку + кастбар)
             container:SetWidth(width)
             container:SetHeight(height)
 
-            -- Иконка: привязана к левому краю контейнера
             cb.icon:ClearAllPoints()
             cb.icon:SetPoint("LEFT", container, "LEFT", 0, 0)
             cb.icon:SetSize(iconSize, iconSize)
-            cb.icon:Show()
 
-            -- Кастбар: справа от иконки, на всю оставшуюся ширину
             local barWidth = width - iconSize
             if barWidth < 1 then barWidth = 1 end
             cb:ClearAllPoints()
             cb:SetPoint("LEFT", cb.icon, "RIGHT", 0, 0)
             cb:SetSize(barWidth, height)
         else
-            -- Иконка справа, кастбар слева
             container:SetWidth(width)
             container:SetHeight(height)
 
-            -- Кастбар: привязан к левому краю контейнера
             cb:ClearAllPoints()
             cb:SetPoint("LEFT", container, "LEFT", 0, 0)
             local barWidth = width - iconSize
             if barWidth < 1 then barWidth = 1 end
             cb:SetSize(barWidth, height)
 
-            -- Иконка: справа от кастбара
             cb.icon:ClearAllPoints()
             cb.icon:SetPoint("LEFT", cb, "RIGHT", 0, 0)
             cb.icon:SetSize(iconSize, iconSize)
-            cb.icon:Show()
         end
     else
-        -- Иконка скрыта, кастбар на весь контейнер
         container:SetWidth(width)
         container:SetHeight(height)
-
-        cb.icon:Hide()
 
         cb:ClearAllPoints()
         cb:SetPoint("LEFT", container, "LEFT", 0, 0)
         cb:SetSize(width, height)
     end
 
-    -- Фон (bg) всегда следует за кастбаром
     if cb.bg then
         cb.bg:SetAllPoints(cb)
+        if _cachedCastBarColors.bgColor then
+            cb.bg:SetVertexColor(_cachedCastBarColors.bgColor[1], _cachedCastBarColors.bgColor[2],
+                                  _cachedCastBarColors.bgColor[3], _cachedCastBarColors.bgColor[4])
+        end
     end
 
-    -- Спарк: размер и позиция обновляются в CastBarOnUpdate
+    if cb.text then
+        cb.text:SetFont(db.castNameFont, db.castNameSize, db.castNameFlags)
+        cb.text:SetPoint("CENTER", cb, "CENTER", db.castNameOffsetX, db.castNameOffsetY)
+        if _cachedCastBarColors.nameColor then
+            cb.text:SetTextColor(_cachedCastBarColors.nameColor[1], _cachedCastBarColors.nameColor[2],
+                                 _cachedCastBarColors.nameColor[3], _cachedCastBarColors.nameColor[4])
+        end
+    end
+
     if cb.spark then
         cb.spark:SetSize(db.castBarSparkWidth, height * db.castBarSparkHeightMultiplier)
     end
 end
 
--- Создание кастбара для неймплейта (вызывается из UpdateStyle)
 function CreatePureCastBar(plate, db)
-    if not plate or plate._pureCB then return plate._pureCB end
+    if not plate then return nil end
+
+    if plate._pureCB then
+        UpdateCastBarSettings(plate._pureCB, db)
+        return plate._pureCB
+    end
 
     local parent = plate.UnitFrame or plate
-
-    -- Создаём контейнер — именно он позиционируется относительно healthBar
-    -- соседние неймплейты (наследует иерархию уровней фреймов)
     local container = CreateFrame("Frame", nil, parent)
     container:SetFrameLevel(parent:GetFrameLevel())
 
-    -- Создаём кастбар как дочерний элемент контейнера
     local cb = CreateFrame("StatusBar", nil, container)
     cb:SetStatusBarTexture(db.castBarTex)
     cb:SetMinMaxValues(0, 100)
@@ -139,40 +132,118 @@ function CreatePureCastBar(plate, db)
     cb:SetAlpha(0)
     cb:Hide()
 
-    -- Кешируем healthBar на cb
     cb._healthBar = plate.healthBar or (plate.UnitFrame and plate.UnitFrame.healthBar) or plate.HealthBar or plate
 
-    -- Фон (дочерний контейнера, но будет перепаренчен через SetAllPoints к cb)
     cb.bg = cb:CreateTexture(nil, "BACKGROUND")
     cb.bg:SetTexture("Interface\\Buttons\\WHITE8X8")
-    -- Инициализируем кэш цветов, если ещё не
-    if not _cachedCastBarColors.bgColor then
-        RefreshCastBarColorCache(db)
-    end
-    cb.bg:SetVertexColor(_cachedCastBarColors.bgColor[1], _cachedCastBarColors.bgColor[2], _cachedCastBarColors.bgColor[3], _cachedCastBarColors.bgColor[4])
+    cb.bg:SetAllPoints(cb)
 
-    -- Текст имени заклинания (дочерний контейнера)
     cb.text = cb:CreateFontString(nil, "OVERLAY")
 
-    -- Иконка заклинания (дочерний контейнера)
     cb.icon = container:CreateTexture(nil, "TOOLTIP")
 
-    -- Спарк (дочерний контейнера)
     cb.spark = container:CreateTexture(nil, "TOOLTIP")
     cb.spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
     cb.spark:SetBlendMode("ADD")
 
-    -- Сохраняем контейнер
     cb.container = container
     plate._pureCB = cb
 
-    -- Первичная настройка позиции
-    UpdateCastBarPosition(cb, db)
-
+    UpdateCastBarSettings(cb, db)
     return cb
 end
 
--- Обновление состояния кастбара по событию
+-- ========== ДИНАМИЧЕСКИЙ ONUPDATE ==========
+local function SetUpdateFrameActive(active)
+    if not updateFrame then return end
+    if active and not updateFrameActive then
+        updateFrame:Show()
+        updateFrameActive = true
+    elseif not active and updateFrameActive then
+        updateFrame:Hide()
+        updateFrameActive = false
+    end
+end
+
+local function CastBarOnUpdateInternal(elapsed)
+    if not activeBars or next(activeBars) == nil then
+        SetUpdateFrameActive(false)
+        return
+    end
+
+    local now = GetTime()
+    local db = AeonoPlates.db.profile
+    if not db then return end
+
+    local toRemove = {}
+    for cb in pairs(activeBars) do
+        if cb.isFading then
+            cb.fadeTimer = cb.fadeTimer - elapsed
+            if cb.fadeTimer <= 0 then
+                cb:Hide()
+                if cb.container then cb.container:Hide() end
+                cb:SetAlpha(0)
+                toRemove[#toRemove + 1] = cb
+            else
+                local fadeAlpha = cb.fadeTimer / db.castBarFadeTime
+                cb:SetAlpha(fadeAlpha)
+                if cb.container then
+                    cb.container:SetAlpha(fadeAlpha)
+                end
+            end
+        else
+            local timeLeft = cb.endTime - now
+            if timeLeft < 0 then timeLeft = 0 end
+
+            local progress = 0
+            if cb.duration > 0 then
+                if cb.isChannel then
+                    progress = timeLeft / cb.duration
+                else
+                    progress = (cb.duration - timeLeft) / cb.duration
+                end
+            end
+            if progress < 0 then progress = 0 elseif progress > 1 then progress = 1 end
+
+            cb:SetValue(progress * 100)
+
+            if cb.spark then
+                local sparkPosition = progress * cb:GetWidth()
+                cb.spark:SetPoint("CENTER", cb, "LEFT", sparkPosition - 0.5, 0)
+            end
+
+            if (not cb.isChannel and now >= cb.endTime) or (cb.isChannel and now <= cb.startTime) then
+                ApplyColor(cb, _cachedCastBarColors.successBar)
+                cb.isFading = true
+                if not cb.fadeTimer then
+                    cb.fadeTimer = db.castBarFadeTime
+                end
+            end
+        end
+    end
+
+    for i = 1, #toRemove do
+        activeBars[toRemove[i]] = nil
+    end
+
+    if next(activeBars) == nil then
+        SetUpdateFrameActive(false)
+    end
+end
+
+function CreateCastBarUpdateFrame()
+    if not updateFrame then
+        updateFrame = CreateFrame("Frame", "AeonoPlatesCastBarUpdateFrame", UIParent)
+        updateFrame:Hide()
+        updateFrame:SetScript("OnUpdate", function(_, elapsed)
+            CastBarOnUpdateInternal(elapsed)
+        end)
+        updateFrameActive = false
+    end
+    return updateFrame
+end
+-- ============================================
+
 function UpdateCastBarState(unit, isStart, isChannel, db)
     if not C_NamePlate or not C_NamePlate.GetNamePlateForUnit then return end
     local plate = C_NamePlate.GetNamePlateForUnit(unit)
@@ -182,13 +253,13 @@ function UpdateCastBarState(unit, isStart, isChannel, db)
     local cb = CreatePureCastBar(plate, db)
     if not cb then return end
 
-    -- Обновляем позицию при каждом старте каста (на случай смены настроек)
-    UpdateCastBarPosition(cb, db)
-
     if not isStart then
         if cb:IsShown() and not cb.isFading then
             cb.isFading = true
             cb.fadeTimer = db.castBarFadeTime
+            if not updateFrameActive then
+                SetUpdateFrameActive(true)
+            end
         end
         return
     end
@@ -234,20 +305,19 @@ function UpdateCastBarState(unit, isStart, isChannel, db)
     cb.isFading = false
     cb.fadeTimer = nil
 
-    -- Размеры больше не устанавливаем здесь — всё в UpdateCastBarPosition
-
-    -- Текст через SetTextST (кэширование позиции, шрифт, цвет)
     if cb.text then
         local maxWidth = db.castNameWidth
         local truncatedName = SmartTruncate(name, maxWidth, db.castNameFont, db.castNameSize, db.castNameFlags)
-        SetTextST(cb.text, db.castNameFont, db.castNameSize, db.castNameFlags,
-                  "CENTER", cb, "CENTER", db.castNameOffsetX, db.castNameOffsetY,
-                  1, truncatedName, _cachedCastBarColors.nameColor)
+        cb.text:SetText(truncatedName)
     end
 
-    -- Иконка: только текстура, позиция уже установлена в UpdateCastBarPosition
     if cb.icon and texture then
         cb.icon:SetTexture(texture)
+        if db.castBarShowIcon then
+            cb.icon:Show()
+        else
+            cb.icon:Hide()
+        end
     end
 
     cb:SetAlpha(1)
@@ -262,69 +332,12 @@ function UpdateCastBarState(unit, isStart, isChannel, db)
     end
 
     activeBars[cb] = true
+    if not updateFrame then
+        CreateCastBarUpdateFrame()
+    end
+    SetUpdateFrameActive(true)
 end
 
--- OnUpdate для анимации кастбаров (вызывается из core.lua)
-function CastBarOnUpdate(elapsed, db)
-    -- Ранний выход: если нет активных баров, не делаем ничего
-    if not next(activeBars) then return end
-
-    local now = GetTime()
-    local toRemove = {}
-
-    for cb in pairs(activeBars) do
-        if cb.isFading then
-            cb.fadeTimer = cb.fadeTimer - elapsed
-            if cb.fadeTimer <= 0 then
-                cb:Hide()
-                if cb.container then cb.container:Hide() end
-                cb:SetAlpha(0)
-                toRemove[#toRemove + 1] = cb
-            else
-                -- Линейное затухание: альфа = остаток / исходное время затухания
-                local fadeAlpha = cb.fadeTimer / db.castBarFadeTime
-                cb:SetAlpha(fadeAlpha)
-                if cb.container then
-                    cb.container:SetAlpha(fadeAlpha)
-                end
-            end
-        else
-            local timeLeft = cb.endTime - now
-            if timeLeft < 0 then timeLeft = 0 end
-
-            local progress = 0
-            if cb.duration > 0 then
-                if cb.isChannel then
-                    progress = timeLeft / cb.duration
-                else
-                    progress = (cb.duration - timeLeft) / cb.duration
-                end
-            end
-            if progress < 0 then progress = 0 elseif progress > 1 then progress = 1 end
-
-            cb:SetValue(progress * 100)
-
-            if cb.spark then
-                local sparkPosition = progress * cb:GetWidth()
-                cb.spark:SetPoint("CENTER", cb, "LEFT", sparkPosition - 0.5, 0)
-            end
-
-            if (not cb.isChannel and now >= cb.endTime) or (cb.isChannel and now <= cb.startTime) then
-                ApplyColor(cb, _cachedCastBarColors.successBar)
-                cb.isFading = true
-                if not cb.fadeTimer then
-                    cb.fadeTimer = db and db.castBarFadeTime or 0.3
-                end
-            end
-        end
-    end
-
-    for i = 1, #toRemove do
-        activeBars[toRemove[i]] = nil
-    end
-end
-
--- Обработка событий кастбара (вызывается из core.lua)
 function HandleCastBarEvent(event, unit, db)
     if not unit or not unit:find("nameplate") then return end
 
@@ -333,36 +346,28 @@ function HandleCastBarEvent(event, unit, db)
     elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
         UpdateCastBarState(unit, true, true, db)
     elseif event == "UNIT_SPELLCAST_INTERRUPTED" or event == "UNIT_SPELLCAST_FAILED" then
-        if C_NamePlate and C_NamePlate.GetNamePlateForUnit then
-            local plate = C_NamePlate.GetNamePlateForUnit(unit)
-            local cb = plate and plate._pureCB
-            if cb and cb:IsShown() and not cb.isFading then
-                ApplyColor(cb, _cachedCastBarColors.failedBar)
-                cb.isFading = true
-                cb.fadeTimer = db and db.castBarFadeTime or 0.3
+        local plate = C_NamePlate and C_NamePlate.GetNamePlateForUnit(unit)
+        local cb = plate and plate._pureCB
+        if cb and cb:IsShown() and not cb.isFading then
+            ApplyColor(cb, _cachedCastBarColors.failedBar)
+            cb.isFading = true
+            cb.fadeTimer = db and db.castBarFadeTime or 0.3
+            if not updateFrameActive then
+                SetUpdateFrameActive(true)
             end
         end
     elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" then
         UpdateCastBarState(unit, false, nil, db)
     elseif event == "NAME_PLATE_UNIT_REMOVED" then
-        if C_NamePlate and C_NamePlate.GetNamePlateForUnit then
-            local plate = C_NamePlate.GetNamePlateForUnit(unit)
-            if plate and plate._pureCB then
-                plate._pureCB:Hide()
-                if plate._pureCB.container then plate._pureCB.container:Hide() end
-                activeBars[plate._pureCB] = nil
-            end
-        end
-    elseif event == "NAME_PLATE_UNIT_ADDED" then
-        if UnitCastingInfo(unit) then
-            UpdateCastBarState(unit, true, false, db)
-        elseif UnitChannelInfo(unit) then
-            UpdateCastBarState(unit, true, true, db)
+        local plate = C_NamePlate and C_NamePlate.GetNamePlateForUnit(unit)
+        if plate and plate._pureCB then
+            plate._pureCB:Hide()
+            if plate._pureCB.container then plate._pureCB.container:Hide() end
+            activeBars[plate._pureCB] = nil
         end
     end
 end
 
--- Очистка активных баров (вызывается при смене профиля)
 function ClearActiveCastBars()
     for cb in pairs(activeBars) do
         cb:Hide()
@@ -370,4 +375,5 @@ function ClearActiveCastBars()
         cb:SetAlpha(0)
     end
     activeBars = {}
+    SetUpdateFrameActive(false)
 end
