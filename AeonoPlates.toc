@@ -5,5 +5,4 @@
 ## Version: 1.0.0
 ## LoadOn: PLAYER_LOGIN
 ## SavedVariables: AeonoPlatesDB
-
-AeonoPlates.xml
+## X-Sirus-Update: https://github.com/Aeonoscul/AeonoPlates/tree/main

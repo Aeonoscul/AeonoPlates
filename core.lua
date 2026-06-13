@@ -454,9 +454,6 @@ function AeonoPlates:OnTargetChanged()
             local u = frame.unit or (frame.UnitFrame and frame.UnitFrame.unit)
             if u then
                 local targetFrame = frame.UnitFrame or frame
-                -- Используем лёгкий вызов: GetUnitData не нужен, т.к. UpdateCustomBorder
-                -- использует только data.unit, data.isTotemIcon, data.isOnlyNameMode
-                -- Создаём минимальную data на лету через переиспользуемую таблицу
                 local data = GetUnitData(targetFrame)
                 if data then
                     UpdateCustomBorder(targetFrame, data, db)
