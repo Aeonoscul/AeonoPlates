@@ -20,11 +20,6 @@ function UpdateHealthBarTexture(frame, data, db)
             frame.healthBar.Background:Show()
         end
 
-        -- Скрываем родной border healthBar (он больше не нужен, используем кастомный)
-        if frame.healthBar.border then
-            frame.healthBar.border:Hide()
-        end
-
         -- Кэшируем текстуру
         if frame.lastBarTex ~= db.healthTexture then
             local tex = frame.healthBar:GetStatusBarTexture()

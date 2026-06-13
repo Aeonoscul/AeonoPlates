@@ -1,9 +1,7 @@
 --[[
     core.lua — AeonoPlates
     Ядро аддона: AceAddon-3.0, события, хуки, OnUpdate-поллинг, UpdateStyle
-]]
-
-local MAJOR, MINOR = "AeonoPlates", 1
+]] local MAJOR, MINOR = "AeonoPlates", 1
 
 -- Регистрация аддона (глобал для доступа из options.lua и других файлов)
 AeonoPlates = LibStub("AceAddon-3.0"):NewAddon("AeonoPlates", "AceEvent-3.0", "AceHook-3.0", "AceConsole-3.0")
@@ -14,131 +12,131 @@ local defaults = {
         -- ============================================
         -- NAME SETTINGS
         -- ============================================
-        nameFont                = "Fonts\\FRIZQT__.TTF",
-        nameFlags               = "OUTLINE",
-        nameWidth               = 140,
-        nameFriendlyPlayerSize  = 20,
-        nameEnemyPlayerSize     = 16,
-        nameFriendlyNpcSize     = 18,
-        nameEnemyNpcSize        = 14,
-        nameAnchor              = "BOTTOM",
-        nameRelAnchor           = "TOP",
-        nameOffsetX             = 0,
-        nameOffsetY             = 2,
-        onlyNameAnchor          = "CENTER",
-        onlyNameOffsetX         = 0,
-        onlyNameOffsetY         = 0,
-        onlyNameWidth           = 120,
+        nameFont = "Fonts\\FRIZQT__.TTF",
+        nameFlags = "OUTLINE",
+        nameWidth = 140,
+        nameFriendlyPlayerSize = 20,
+        nameEnemyPlayerSize = 16,
+        nameFriendlyNpcSize = 18,
+        nameEnemyNpcSize = 14,
+        nameAnchor = "BOTTOM",
+        nameRelAnchor = "TOP",
+        nameOffsetX = 0,
+        nameOffsetY = 2,
+        onlyNameAnchor = "CENTER",
+        onlyNameOffsetX = 0,
+        onlyNameOffsetY = 0,
+        onlyNameWidth = 120,
 
         -- ============================================
         -- HEALTH SETTINGS
         -- ============================================
-        healthTexture           = "Interface\\TargetingFrame\\UI-StatusBar",
-        showHealthText          = true,
-        showHealthPercent       = true,
-        shortenHealth           = true,
-        healthFont              = "Fonts\\FRIZQT__.TTF",
-        healthSize              = 14,
-        healthFlags             = "OUTLINE",
-        healthAnchor            = "CENTER",
-        healthRelAnchor         = "CENTER",
-        healthOffsetX           = 0,
-        healthOffsetY           = 0,
-        healthPercentSize       = 12,
-        healthPercentAnchor     = "RIGHT",
-        healthPercentRelAnchor  = "RIGHT",
-        healthPercentOffsetX    = -2,
-        healthPercentOffsetY    = 0,
+        healthTexture = "Interface\\TargetingFrame\\UI-StatusBar",
+        showHealthText = true,
+        showHealthPercent = true,
+        shortenHealth = true,
+        healthFont = "Fonts\\FRIZQT__.TTF",
+        healthSize = 14,
+        healthFlags = "OUTLINE",
+        healthAnchor = "CENTER",
+        healthRelAnchor = "CENTER",
+        healthOffsetX = 0,
+        healthOffsetY = 0,
+        healthPercentSize = 12,
+        healthPercentAnchor = "RIGHT",
+        healthPercentRelAnchor = "RIGHT",
+        healthPercentOffsetX = -2,
+        healthPercentOffsetY = 0,
 
         -- ============================================
         -- ICON SETTINGS
         -- ============================================
-        showEnemyClassIcons     = false,
-        showFriendlyClassIcons  = true,
-        showEnemyTotemIcons     = true,
-        showFriendlyTotemIcons  = true,
-        iconSize                = 40,
-        totemIconSize           = 30,
-        iconAnchor              = "BOTTOM",
-        iconRelAnchor           = "TOP",
-        iconOffsetX             = 0,
-        iconOffsetY             = 0,
+        showEnemyClassIcons = false,
+        showFriendlyClassIcons = true,
+        showEnemyTotemIcons = true,
+        showFriendlyTotemIcons = true,
+        iconSize = 40,
+        totemIconSize = 30,
+        iconAnchor = "BOTTOM",
+        iconRelAnchor = "TOP",
+        iconOffsetX = 0,
+        iconOffsetY = 0,
 
         -- ============================================
         -- BORDER SETTINGS
         -- ============================================
-        borderTexture           = "Interface\\Buttons\\WHITE8X8",
-        borderPadding           = 1,
-        borderThickness         = 1,
-        borderTargetColor       = { 1, 1, 1, 1 },
-        borderMouseoverColor    = { 0, 1, 1, 1 },
-        borderCombatColor       = { 1, 0, 0, 1 },
-        borderDefaultColor      = { 0, 0, 0, 1 },
+        borderTexture = "Interface\\Buttons\\WHITE8X8",
+        borderPadding = 1,
+        borderThickness = 1,
+        borderTargetColor = {1, 1, 1, 1},
+        borderMouseoverColor = {0, 1, 1, 1},
+        borderCombatColor = {1, 0, 0, 1},
+        borderDefaultColor = {0, 0, 0, 1},
 
         -- ============================================
         -- THREAT SETTINGS
         -- ============================================
-        threatHighColor         = { 0, 1, 0, 1 },
-        threatLowColor          = { 1, 0, 0, 1 },
-        threatAggroColor        = { 1, 1, 0, 1 },
+        threatHighColor = {0, 1, 0, 1},
+        threatLowColor = {1, 0, 0, 1},
+        threatAggroColor = {1, 1, 0, 1},
 
         -- ============================================
         -- CLASSIFICATION
         -- ============================================
-        showClassification      = true,
-        classificationSize      = 30,
-        classificationAnchor    = "RIGHT",
+        showClassification = true,
+        classificationSize = 30,
+        classificationAnchor = "RIGHT",
         classificationRelAnchor = "LEFT",
-        classificationOffsetX   = -5,
-        classificationOffsetY   = 0,
+        classificationOffsetX = -5,
+        classificationOffsetY = 0,
 
         -- ============================================
         -- RAID TARGET
         -- ============================================
-        raidTargetAnchor        = "LEFT",
-        raidTargetRelAnchor     = "RIGHT",
-        raidTargetScale         = 1.25,
-        raidTargetOffsetX       = 2,
-        raidTargetOffsetY       = 0,
+        raidTargetAnchor = "LEFT",
+        raidTargetRelAnchor = "RIGHT",
+        raidTargetScale = 1.25,
+        raidTargetOffsetX = 2,
+        raidTargetOffsetY = 0,
 
         -- ============================================
         -- SCALE SETTINGS
         -- ============================================
-        petFrameScale           = 0.8,
+        petFrameScale = 0.8,
 
         -- ============================================
         -- CASTBAR SETTINGS
         -- ============================================
-        friendlyPlayerCastBar   = true,
-        enemyPlayerCastBar      = true,
-        friendlyNpcCastBar      = false,
-        enemyNpcCastBar         = true,
-        castBarTex              = "Interface\\TargetingFrame\\UI-StatusBar",
-        castBarFadeTime         = 0.5,
-        castBarHeight           = 16,
-        castBarWidth            = 120,
-        castBarShowIcon         = true,
-        castBarIconSide         = "LEFT",
-        castBarIconOffsetX      = 0,
-        castBarIconOffsetY      = 0,
-        castBarAnchor           = "TOP",
-        castBarRelativePoint    = "BOTTOM",
-        castBarOffsetX          = 0,
-        castBarOffsetY          = -3,
-        castBarColor            = { 1, 1, 0, 1 },
-        castBarSuccessColor     = { 0, 1, 0, 1 },
-        castBarFailedColor      = { 1, 0, 0, 1 },
-        castBarShieldColor      = { 0.5, 0.5, 1, 1 },
-        castBarBgColor          = { 0, 0, 0, 0.5 },
-        castNameFont            = "Fonts\\FRIZQT__.TTF",
-        castNameSize            = 10,
-        castNameWidth           = 100,
-        castNameFlags           = "OUTLINE",
-        castNameColor           = { 1, 1, 1, 1 },
-        castNameOffsetX         = 0,
-        castNameOffsetY         = 0,
-        castBarSparkWidth              = 20,
-        castBarSparkHeightMultiplier   = 2,
+        friendlyPlayerCastBar = true,
+        enemyPlayerCastBar = true,
+        friendlyNpcCastBar = false,
+        enemyNpcCastBar = true,
+        castBarTex = "Interface\\TargetingFrame\\UI-StatusBar",
+        castBarFadeTime = 0.5,
+        castBarHeight = 16,
+        castBarWidth = 120,
+        castBarShowIcon = true,
+        castBarIconSide = "LEFT",
+        castBarIconOffsetX = 0,
+        castBarIconOffsetY = 0,
+        castBarAnchor = "TOP",
+        castBarRelativePoint = "BOTTOM",
+        castBarOffsetX = 0,
+        castBarOffsetY = -3,
+        castBarColor = {1, 1, 0, 1},
+        castBarSuccessColor = {0, 1, 0, 1},
+        castBarFailedColor = {1, 0, 0, 1},
+        castBarShieldColor = {0.5, 0.5, 1, 1},
+        castBarBgColor = {0, 0, 0, 0.5},
+        castNameFont = "Fonts\\FRIZQT__.TTF",
+        castNameSize = 10,
+        castNameWidth = 100,
+        castNameFlags = "OUTLINE",
+        castNameColor = {1, 1, 1, 1},
+        castNameOffsetX = 0,
+        castNameOffsetY = 0,
+        castBarSparkWidth = 20,
+        castBarSparkHeightMultiplier = 2
     }
 }
 
@@ -155,40 +153,54 @@ local _prevMouseoverFrame = nil
 -- ============================================
 local function InitLSM()
     local LSM = LibStub("LibSharedMedia-3.0", true)
-    if not LSM then return end
+    if not LSM then
+        return
+    end
 
     local db = AeonoPlates.db.profile
 
     -- Если в db.profile хранится имя (не путь), конвертируем в путь
     if db.nameFont and not db.nameFont:find("\\") and not db.nameFont:find("/") then
         local path = LSM:Fetch("font", db.nameFont)
-        if path then db.nameFont = path end
+        if path then
+            db.nameFont = path
+        end
     end
 
     if db.healthFont and not db.healthFont:find("\\") and not db.healthFont:find("/") then
         local path = LSM:Fetch("font", db.healthFont)
-        if path then db.healthFont = path end
+        if path then
+            db.healthFont = path
+        end
     end
 
     if db.healthTexture and not db.healthTexture:find("\\") and not db.healthTexture:find("/") then
         local path = LSM:Fetch("statusbar", db.healthTexture)
-        if path then db.healthTexture = path end
+        if path then
+            db.healthTexture = path
+        end
     end
 
     if db.borderTexture and not db.borderTexture:find("\\") and not db.borderTexture:find("/") then
         local path = LSM:Fetch("border", db.borderTexture)
-        if path then db.borderTexture = path end
+        if path then
+            db.borderTexture = path
+        end
     end
 
     -- Конвертация настроек кастбара
     if db.castBarTex and not db.castBarTex:find("\\") and not db.castBarTex:find("/") then
         local path = LSM:Fetch("statusbar", db.castBarTex)
-        if path then db.castBarTex = path end
+        if path then
+            db.castBarTex = path
+        end
     end
 
     if db.castNameFont and not db.castNameFont:find("\\") and not db.castNameFont:find("/") then
         local path = LSM:Fetch("font", db.castNameFont)
-        if path then db.castNameFont = path end
+        if path then
+            db.castNameFont = path
+        end
     end
 end
 
@@ -199,6 +211,16 @@ local function HideCastBar(cb)
     local unit = cb.unit or cb.displayedUnit or (cb.UnitFrame and cb.UnitFrame.unit)
     if unit and unit:find("nameplate") then
         cb:Hide()
+    end
+end
+
+function HideName(frame)
+    local unit = frame.unit or frame.displayedUnit or (frame.UnitFrame and frame.UnitFrame.unit)
+    if unit and unit:find("nameplate") then
+        local name = frame.name or (frame.UnitFrame and frame.UnitFrame.name)
+        if name then
+            name:Hide()
+        end
     end
 end
 
@@ -213,12 +235,23 @@ local function HideHighlight(frame)
 end
 
 local function HideBuffs(frame)
-    local bf = frame.BuffFrame or (frame.UnitFrame and frame.UnitFrame.BuffFrame)
-    if bf then
-        bf:Hide()
+    local unit = frame.unit or frame.displayedUnit or (frame.UnitFrame and frame.UnitFrame.unit)
+    if unit and unit:find("nameplate") then
+        local bf = frame.BuffFrame or (frame.UnitFrame and frame.UnitFrame.BuffFrame)
+        if bf then
+            bf:Hide()
+        end
     end
 end
 
+local function HideBorder(frame)
+    local unit = frame.unit or frame.displayedUnit or (frame.UnitFrame and frame.UnitFrame.unit)
+    if unit and unit:find("nameplate") then
+        if frame.healthBar.border then
+            frame.healthBar.border:Hide()
+        end
+    end
+end
 -- ============================================
 -- MOUSEOVER
 -- ============================================
@@ -285,15 +318,27 @@ local function UpdatePlayerSelf(frame)
         return false
     end
 
-    if frame.customName then frame.customName:Hide() end
-    if frame.healthText then frame.healthText:Hide() end
-    if frame.percText then frame.percText:Hide() end
-    if frame.classIcon then frame.classIcon:Hide() end
+    if frame.customName then
+        frame.customName:Hide()
+    end
+    if frame.healthText then
+        frame.healthText:Hide()
+    end
+    if frame.percText then
+        frame.percText:Hide()
+    end
+    if frame.classIcon then
+        frame.classIcon:Hide()
+    end
     if frame.healthBar then
         frame.healthBar:SetAlpha(tonumber(GetCVar("nameplateShowSelf")) or 0)
     end
-    if frame.BuffFrame then frame.BuffFrame:Show() end
-    if frame.customBorder then frame.customBorder:Hide() end
+    if frame.BuffFrame then
+        frame.BuffFrame:Show()
+    end
+    if frame.customBorder then
+        frame.customBorder:Hide()
+    end
 
     return true
 end
@@ -323,7 +368,9 @@ function AeonoPlates:UpdateStyle(frame)
     end
 
     local data = GetUnitData(frame)
-    if not data then return end
+    if not data then
+        return
+    end
 
     -- Скрытие нативного UI
     local cb = frame.castBar or (frame.UnitFrame and frame.UnitFrame.castBar)
@@ -333,6 +380,7 @@ function AeonoPlates:UpdateStyle(frame)
     HideName(frame)
     HideHighlight(frame)
     HideBuffs(frame)
+    HideBorder(frame)
 
     -- Вызов модулей
     UpdateHealthBarTexture(frame, data, db)
@@ -346,7 +394,7 @@ function AeonoPlates:UpdateStyle(frame)
     UpdateUnitIcon(frame, data, db)
     UpdateClassification(frame, data, db)
     UpdateRaidTarget(frame, data, db)
-    --UpdateFrameScale(frame, data, db)
+    UpdateFrameScale(frame, data, db)
     UpdateMouseoverFrameLevel(frame, data)
     UpdateCustomBorder(frame, data, db)
     UpdateThreatIndicator(frame, data, db)
@@ -454,9 +502,6 @@ function AeonoPlates:OnTargetChanged()
             local u = frame.unit or (frame.UnitFrame and frame.UnitFrame.unit)
             if u then
                 local targetFrame = frame.UnitFrame or frame
-                -- Используем лёгкий вызов: GetUnitData не нужен, т.к. UpdateCustomBorder
-                -- использует только data.unit, data.isTotemIcon, data.isOnlyNameMode
-                -- Создаём минимальную data на лету через переиспользуемую таблицу
                 local data = GetUnitData(targetFrame)
                 if data then
                     UpdateCustomBorder(targetFrame, data, db)
@@ -644,7 +689,9 @@ function AeonoPlates:OnEnable()
         local lastCheck = 0
         pollFrame:SetScript("OnUpdate", function()
             local now = GetTime()
-            if now - lastCheck < 0.1 then return end
+            if now - lastCheck < 0.1 then
+                return
+            end
             lastCheck = now
 
             if not UnitExists("mouseover") and _prevMouseoverFrame then
@@ -695,10 +742,14 @@ end
 -- ============================================
 function AeonoPlates:RegisterMinimapIcon()
     local icon = LibStub("LibDBIcon-1.0", true)
-    if not icon then return end
+    if not icon then
+        return
+    end
 
     local ldb = LibStub("LibDataBroker-1.1", true)
-    if not ldb then return end
+    if not ldb then
+        return
+    end
 
     local dataobj = ldb:NewDataObject("AeonoPlates", {
         type = "data source",

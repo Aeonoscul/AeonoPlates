@@ -3,17 +3,6 @@
     Настройки имени: кастомное имя, скрытие оригинального
 ]]
 
--- Скрытие оригинального имени неймплейта
-function HideName(frame)
-    local unit = frame.unit or frame.displayedUnit or (frame.UnitFrame and frame.UnitFrame.unit)
-    if unit and unit:find("nameplate") then
-        local name = frame.name or (frame.UnitFrame and frame.UnitFrame.name)
-        if name then
-            name:Hide()
-        end
-    end
-end
-
 -- Обновление кастомного имени
 function UpdateNameText(frame, data, db)
     if data.isTotemIcon then
