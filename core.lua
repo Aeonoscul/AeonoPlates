@@ -214,7 +214,7 @@ local function HideCastBar(cb)
     end
 end
 
-function HideName(frame)
+local function HideName(frame)
     local unit = frame.unit or frame.displayedUnit or (frame.UnitFrame and frame.UnitFrame.unit)
     if unit and unit:find("nameplate") then
         local name = frame.name or (frame.UnitFrame and frame.UnitFrame.name)
