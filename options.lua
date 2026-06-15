@@ -1,9 +1,7 @@
 --[[
     options.lua — AeonoPlates
     Интерфейс настроек на AceConfig-3.0
-]]
-
--- Получаем ссылку на аддон (глобал, установленный в core.lua)
+]] -- Получаем ссылку на аддон (глобал, установленный в core.lua)
 AeonoPlates = LibStub("AceAddon-3.0"):GetAddon("AeonoPlates")
 
 -- ============================================
@@ -13,7 +11,9 @@ AeonoPlates = LibStub("AceAddon-3.0"):GetAddon("AeonoPlates")
 -- Получение списка шрифтов из LSM (key = path, value = name для AceConfig select)
 local function GetFontList()
     local LSM = LibStub("LibSharedMedia-3.0", true)
-    if not LSM then return {} end
+    if not LSM then
+        return {}
+    end
     local list = LSM:HashTable("font")
     local result = {}
     for key, path in pairs(list) do
@@ -25,7 +25,9 @@ end
 -- Получение списка текстур из LSM (key = path, value = name)
 local function GetStatusBarList()
     local LSM = LibStub("LibSharedMedia-3.0", true)
-    if not LSM then return {} end
+    if not LSM then
+        return {}
+    end
     local list = LSM:HashTable("statusbar")
     local result = {}
     for key, path in pairs(list) do
@@ -37,7 +39,9 @@ end
 -- Получение списка бордеров из LSM (key = path, value = name)
 local function GetBorderList()
     local LSM = LibStub("LibSharedMedia-3.0", true)
-    if not LSM then return {} end
+    if not LSM then
+        return {}
+    end
     local list = LSM:HashTable("border")
     local result = {}
     for key, path in pairs(list) do
@@ -56,7 +60,7 @@ local anchorOptions = {
     TOPLEFT = "TOPLEFT",
     BOTTOMLEFT = "BOTTOMLEFT",
     TOPRIGHT = "TOPRIGHT",
-    BOTTOMRIGHT = "BOTTOMRIGHT",
+    BOTTOMRIGHT = "BOTTOMRIGHT"
 }
 
 -- Список флагов шрифта
@@ -64,7 +68,7 @@ local flagOptions = {
     NONE = "None",
     MONOCHROME = "MONOCHROME",
     OUTLINE = "OUTLINE",
-    THICKOUTLINE = "THICKOUTLINE",
+    THICKOUTLINE = "THICKOUTLINE"
 }
 
 -- ============================================
@@ -89,9 +93,16 @@ local options = {
                     name = "Шрифт имени",
                     desc = "Шрифт для имени",
                     order = 10,
-                    values = function() return GetFontList() end,
-                    set = function(info, val) AeonoPlates.db.profile.nameFont = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.nameFont end,
+                    values = function()
+                        return GetFontList()
+                    end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.nameFont = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.nameFont
+                    end
                 },
                 nameFlags = {
                     type = "select",
@@ -99,53 +110,93 @@ local options = {
                     desc = "Флаги шрифта имени",
                     order = 20,
                     values = flagOptions,
-                    set = function(info, val) AeonoPlates.db.profile.nameFlags = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.nameFlags end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.nameFlags = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.nameFlags
+                    end
                 },
                 nameWidth = {
                     type = "range",
                     name = "Ширина имени",
                     desc = "Максимальная ширина имени (пиксели)",
                     order = 30,
-                    min = 20, max = 500, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.nameWidth = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.nameWidth end,
+                    min = 20,
+                    max = 500,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.nameWidth = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.nameWidth
+                    end
                 },
                 nameFriendlyPlayerSize = {
                     type = "range",
                     name = "Размер (союзный игрок)",
                     desc = "Размер шрифта имени для дружественных игроков",
                     order = 30,
-                    min = 6, max = 48, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.nameFriendlyPlayerSize = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.nameFriendlyPlayerSize end,
+                    min = 6,
+                    max = 48,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.nameFriendlyPlayerSize = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.nameFriendlyPlayerSize
+                    end
                 },
                 nameEnemyPlayerSize = {
                     type = "range",
                     name = "Размер (вражеский игрок)",
                     desc = "Размер шрифта имени для вражеских игроков",
                     order = 40,
-                    min = 6, max = 48, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.nameEnemyPlayerSize = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.nameEnemyPlayerSize end,
+                    min = 6,
+                    max = 48,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.nameEnemyPlayerSize = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.nameEnemyPlayerSize
+                    end
                 },
                 nameFriendlyNpcSize = {
                     type = "range",
                     name = "Размер (союзный NPC)",
                     desc = "Размер шрифта имени для дружественных NPC",
                     order = 50,
-                    min = 6, max = 48, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.nameFriendlyNpcSize = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.nameFriendlyNpcSize end,
+                    min = 6,
+                    max = 48,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.nameFriendlyNpcSize = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.nameFriendlyNpcSize
+                    end
                 },
                 nameEnemyNpcSize = {
                     type = "range",
                     name = "Размер (вражеский NPC)",
                     desc = "Размер шрифта имени для вражеских NPC",
                     order = 60,
-                    min = 6, max = 48, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.nameEnemyNpcSize = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.nameEnemyNpcSize end,
+                    min = 6,
+                    max = 48,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.nameEnemyNpcSize = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.nameEnemyNpcSize
+                    end
                 },
                 nameAnchor = {
                     type = "select",
@@ -153,8 +204,13 @@ local options = {
                     desc = "Точка привязки имени",
                     order = 70,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.nameAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.nameAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.nameAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.nameAnchor
+                    end
                 },
                 nameRelAnchor = {
                     type = "select",
@@ -162,26 +218,45 @@ local options = {
                     desc = "Относительная точка привязки имени",
                     order = 80,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.nameRelAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.nameRelAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.nameRelAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.nameRelAnchor
+                    end
                 },
                 nameOffsetX = {
                     type = "range",
                     name = "Смещение X",
                     desc = "Смещение имени по X",
                     order = 90,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.nameOffsetX = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.nameOffsetX end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.nameOffsetX = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.nameOffsetX
+                    end
                 },
                 nameOffsetY = {
                     type = "range",
                     name = "Смещение Y",
                     desc = "Смещение имени по Y",
                     order = 100,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.nameOffsetY = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.nameOffsetY end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.nameOffsetY = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.nameOffsetY
+                    end
                 },
                 onlyNameAnchor = {
                     type = "select",
@@ -189,37 +264,63 @@ local options = {
                     desc = "Точка привязки в режиме только-имя",
                     order = 120,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.onlyNameAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.onlyNameAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.onlyNameAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.onlyNameAnchor
+                    end
                 },
                 onlyNameOffsetX = {
                     type = "range",
                     name = "Смещение X (только имя)",
                     desc = "Смещение по X в режиме только-имя",
                     order = 130,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.onlyNameOffsetX = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.onlyNameOffsetX end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.onlyNameOffsetX = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.onlyNameOffsetX
+                    end
                 },
                 onlyNameOffsetY = {
                     type = "range",
                     name = "Смещение Y (только имя)",
                     desc = "Смещение по Y в режиме только-имя",
                     order = 140,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.onlyNameOffsetY = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.onlyNameOffsetY end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.onlyNameOffsetY = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.onlyNameOffsetY
+                    end
                 },
                 onlyNameWidth = {
                     type = "range",
                     name = "Ширина (только имя)",
                     desc = "Максимальная ширина имени в режиме только-имя",
                     order = 160,
-                    min = 20, max = 500, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.onlyNameWidth = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.onlyNameWidth end,
-                },
-            },
+                    min = 20,
+                    max = 500,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.onlyNameWidth = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.onlyNameWidth
+                    end
+                }
+            }
         },
 
         -- ============================================
@@ -235,51 +336,87 @@ local options = {
                     name = "Текстура полосы",
                     desc = "Текстура полосы здоровья",
                     order = 10,
-                    values = function() return GetStatusBarList() end,
-                    set = function(info, val) AeonoPlates.db.profile.healthTexture = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthTexture end,
+                    values = function()
+                        return GetStatusBarList()
+                    end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthTexture = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthTexture
+                    end
                 },
                 showHealthText = {
                     type = "toggle",
                     name = "Показывать текст здоровья",
                     desc = "Показывать текст здоровья",
                     order = 20,
-                    set = function(info, val) AeonoPlates.db.profile.showHealthText = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.showHealthText end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.showHealthText = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.showHealthText
+                    end
                 },
                 showHealthPercent = {
                     type = "toggle",
                     name = "Показывать процент здоровья",
                     desc = "Показывать процент здоровья",
                     order = 30,
-                    set = function(info, val) AeonoPlates.db.profile.showHealthPercent = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.showHealthPercent end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.showHealthPercent = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.showHealthPercent
+                    end
                 },
                 shortenHealth = {
                     type = "toggle",
                     name = "Сокращать здоровье",
                     desc = "Сокращать здоровье (1.2k, 3.5M)",
                     order = 40,
-                    set = function(info, val) AeonoPlates.db.profile.shortenHealth = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.shortenHealth end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.shortenHealth = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.shortenHealth
+                    end
                 },
                 healthFont = {
                     type = "select",
                     name = "Шрифт HP",
                     desc = "Шрифт для текста здоровья",
                     order = 45,
-                    values = function() return GetFontList() end,
-                    set = function(info, val) AeonoPlates.db.profile.healthFont = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthFont end,
+                    values = function()
+                        return GetFontList()
+                    end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthFont = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthFont
+                    end
                 },
                 healthSize = {
                     type = "range",
                     name = "Размер шрифта HP",
                     desc = "Размер шрифта текста здоровья",
                     order = 50,
-                    min = 6, max = 48, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.healthSize = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthSize end,
+                    min = 6,
+                    max = 48,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthSize = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthSize
+                    end
                 },
                 healthFlags = {
                     type = "select",
@@ -287,8 +424,13 @@ local options = {
                     desc = "Флаги шрифта здоровья",
                     order = 60,
                     values = flagOptions,
-                    set = function(info, val) AeonoPlates.db.profile.healthFlags = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthFlags end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthFlags = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthFlags
+                    end
                 },
                 healthAnchor = {
                     type = "select",
@@ -296,8 +438,13 @@ local options = {
                     desc = "Точка привязки текста здоровья",
                     order = 70,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.healthAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthAnchor
+                    end
                 },
                 healthRelAnchor = {
                     type = "select",
@@ -305,35 +452,61 @@ local options = {
                     desc = "Относительная точка привязки текста здоровья",
                     order = 80,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.healthRelAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthRelAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthRelAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthRelAnchor
+                    end
                 },
                 healthOffsetX = {
                     type = "range",
                     name = "Смещение HP X",
                     desc = "Смещение текста здоровья по X",
                     order = 90,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.healthOffsetX = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthOffsetX end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthOffsetX = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthOffsetX
+                    end
                 },
                 healthOffsetY = {
                     type = "range",
                     name = "Смещение HP Y",
                     desc = "Смещение текста здоровья по Y",
                     order = 100,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.healthOffsetY = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthOffsetY end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthOffsetY = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthOffsetY
+                    end
                 },
                 healthPercentSize = {
                     type = "range",
                     name = "Размер шрифта %",
                     desc = "Размер шрифта процента здоровья",
                     order = 110,
-                    min = 6, max = 48, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.healthPercentSize = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthPercentSize end,
+                    min = 6,
+                    max = 48,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthPercentSize = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthPercentSize
+                    end
                 },
                 healthPercentAnchor = {
                     type = "select",
@@ -341,8 +514,13 @@ local options = {
                     desc = "Точка привязки процента здоровья",
                     order = 120,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.healthPercentAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthPercentAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthPercentAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthPercentAnchor
+                    end
                 },
                 healthPercentRelAnchor = {
                     type = "select",
@@ -350,28 +528,47 @@ local options = {
                     desc = "Относительная точка привязки процента здоровья",
                     order = 130,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.healthPercentRelAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthPercentRelAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthPercentRelAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthPercentRelAnchor
+                    end
                 },
                 healthPercentOffsetX = {
                     type = "range",
                     name = "Смещение % X",
                     desc = "Смещение процента здоровья по X",
                     order = 140,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.healthPercentOffsetX = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthPercentOffsetX end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthPercentOffsetX = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthPercentOffsetX
+                    end
                 },
                 healthPercentOffsetY = {
                     type = "range",
                     name = "Смещение % Y",
                     desc = "Смещение процента здоровья по Y",
                     order = 150,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.healthPercentOffsetY = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.healthPercentOffsetY end,
-                },
-            },
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthPercentOffsetY = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthPercentOffsetY
+                    end
+                }
+            }
         },
 
         -- ============================================
@@ -387,50 +584,84 @@ local options = {
                     name = "Иконки классов (враги)",
                     desc = "Показывать иконки классов у врагов",
                     order = 10,
-                    set = function(info, val) AeonoPlates.db.profile.showEnemyClassIcons = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.showEnemyClassIcons end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.showEnemyClassIcons = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.showEnemyClassIcons
+                    end
                 },
                 showFriendlyClassIcons = {
                     type = "toggle",
                     name = "Иконки классов (союзники)",
                     desc = "Показывать иконки классов у союзников",
                     order = 20,
-                    set = function(info, val) AeonoPlates.db.profile.showFriendlyClassIcons = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.showFriendlyClassIcons end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.showFriendlyClassIcons = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.showFriendlyClassIcons
+                    end
                 },
                 showEnemyTotemIcons = {
                     type = "toggle",
                     name = "Иконки тотемов (враги)",
                     desc = "Показывать иконки тотемов у врагов",
                     order = 30,
-                    set = function(info, val) AeonoPlates.db.profile.showEnemyTotemIcons = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.showEnemyTotemIcons end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.showEnemyTotemIcons = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.showEnemyTotemIcons
+                    end
                 },
                 showFriendlyTotemIcons = {
                     type = "toggle",
                     name = "Иконки тотемов (союзники)",
                     desc = "Показывать иконки тотемов у союзников",
                     order = 40,
-                    set = function(info, val) AeonoPlates.db.profile.showFriendlyTotemIcons = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.showFriendlyTotemIcons end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.showFriendlyTotemIcons = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.showFriendlyTotemIcons
+                    end
                 },
                 iconSize = {
                     type = "range",
                     name = "Размер иконки класса",
                     desc = "Размер иконки класса (ширина = высота)",
                     order = 50,
-                    min = 8, max = 64, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.iconSize = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.iconSize end,
+                    min = 8,
+                    max = 64,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.iconSize = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.iconSize
+                    end
                 },
                 totemIconSize = {
                     type = "range",
                     name = "Размер иконки тотема",
                     desc = "Размер иконки тотема (ширина = высота)",
                     order = 60,
-                    min = 8, max = 64, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.totemIconSize = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.totemIconSize end,
+                    min = 8,
+                    max = 64,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.totemIconSize = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.totemIconSize
+                    end
                 },
                 iconAnchor = {
                     type = "select",
@@ -438,8 +669,13 @@ local options = {
                     desc = "Точка привязки иконки",
                     order = 90,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.iconAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.iconAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.iconAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.iconAnchor
+                    end
                 },
                 iconRelAnchor = {
                     type = "select",
@@ -447,28 +683,47 @@ local options = {
                     desc = "Относительная точка привязки иконки",
                     order = 100,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.iconRelAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.iconRelAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.iconRelAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.iconRelAnchor
+                    end
                 },
                 iconOffsetX = {
                     type = "range",
                     name = "Смещение иконки X",
                     desc = "Смещение иконки по X",
                     order = 110,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.iconOffsetX = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.iconOffsetX end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.iconOffsetX = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.iconOffsetX
+                    end
                 },
                 iconOffsetY = {
                     type = "range",
                     name = "Смещение иконки Y",
                     desc = "Смещение иконки по Y",
                     order = 120,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.iconOffsetY = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.iconOffsetY end,
-                },
-            },
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.iconOffsetY = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.iconOffsetY
+                    end
+                }
+            }
         },
 
         -- ============================================
@@ -484,27 +739,48 @@ local options = {
                     name = "Текстура границы",
                     desc = "Текстура границы",
                     order = 10,
-                    values = function() return GetBorderList() end,
-                    set = function(info, val) AeonoPlates.db.profile.borderTexture = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.borderTexture end,
+                    values = function()
+                        return GetBorderList()
+                    end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.borderTexture = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.borderTexture
+                    end
                 },
                 borderPadding = {
                     type = "range",
                     name = "Размер границы",
                     desc = "Отступ границы от края полосы здоровья",
                     order = 20,
-                    min = 1, max = 20, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.borderPadding = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.borderPadding end,
+                    min = 1,
+                    max = 20,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.borderPadding = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.borderPadding
+                    end
                 },
                 borderThickness = {
                     type = "range",
                     name = "Толщина границы",
                     desc = "Толщина границы",
                     order = 30,
-                    min = 1, max = 32, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.borderThickness = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.borderThickness end,
+                    min = 1,
+                    max = 32,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.borderThickness = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.borderThickness
+                    end
                 },
                 borderTargetColor = {
                     type = "color",
@@ -520,7 +796,7 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.borderTargetColor
                         return c[1], c[2], c[3], c[4]
-                    end,
+                    end
                 },
                 borderMouseoverColor = {
                     type = "color",
@@ -536,7 +812,7 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.borderMouseoverColor
                         return c[1], c[2], c[3], c[4]
-                    end,
+                    end
                 },
                 borderCombatColor = {
                     type = "color",
@@ -552,7 +828,7 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.borderCombatColor
                         return c[1], c[2], c[3], c[4]
-                    end,
+                    end
                 },
                 borderDefaultColor = {
                     type = "color",
@@ -568,9 +844,9 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.borderDefaultColor
                         return c[1], c[2], c[3], c[4]
-                    end,
-                },
-            },
+                    end
+                }
+            }
         },
 
         -- ============================================
@@ -595,7 +871,7 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.threatHighColor
                         return c[1], c[2], c[3], c[4]
-                    end,
+                    end
                 },
                 threatLowColor = {
                     type = "color",
@@ -611,7 +887,7 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.threatLowColor
                         return c[1], c[2], c[3], c[4]
-                    end,
+                    end
                 },
                 threatAggroColor = {
                     type = "color",
@@ -627,9 +903,9 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.threatAggroColor
                         return c[1], c[2], c[3], c[4]
-                    end,
-                },
-            },
+                    end
+                }
+            }
         },
 
         -- ============================================
@@ -645,17 +921,29 @@ local options = {
                     name = "Показывать классификацию",
                     desc = "Показывать индикатор элиты/рарности",
                     order = 10,
-                    set = function(info, val) AeonoPlates.db.profile.showClassification = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.showClassification end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.showClassification = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.showClassification
+                    end
                 },
                 classificationSize = {
                     type = "range",
                     name = "Размер иконки",
                     desc = "Размер иконки классификации",
                     order = 20,
-                    min = 8, max = 64, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.classificationSize = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.classificationSize end,
+                    min = 8,
+                    max = 64,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.classificationSize = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.classificationSize
+                    end
                 },
                 classificationAnchor = {
                     type = "select",
@@ -663,8 +951,13 @@ local options = {
                     desc = "Точка привязки иконки классификации",
                     order = 30,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.classificationAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.classificationAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.classificationAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.classificationAnchor
+                    end
                 },
                 classificationRelAnchor = {
                     type = "select",
@@ -672,28 +965,47 @@ local options = {
                     desc = "Относительная точка привязки иконки классификации",
                     order = 40,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.classificationRelAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.classificationRelAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.classificationRelAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.classificationRelAnchor
+                    end
                 },
                 classificationOffsetX = {
                     type = "range",
                     name = "Смещение X",
                     desc = "Смещение иконки классификации по X",
                     order = 50,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.classificationOffsetX = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.classificationOffsetX end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.classificationOffsetX = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.classificationOffsetX
+                    end
                 },
                 classificationOffsetY = {
                     type = "range",
                     name = "Смещение Y",
                     desc = "Смещение иконки классификации по Y",
                     order = 60,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.classificationOffsetY = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.classificationOffsetY end,
-                },
-            },
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.classificationOffsetY = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.classificationOffsetY
+                    end
+                }
+            }
         },
 
         -- ============================================
@@ -710,8 +1022,13 @@ local options = {
                     desc = "Точка привязки рейдовой метки",
                     order = 10,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.raidTargetAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.raidTargetAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.raidTargetAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.raidTargetAnchor
+                    end
                 },
                 raidTargetRelAnchor = {
                     type = "select",
@@ -719,37 +1036,63 @@ local options = {
                     desc = "Относительная точка привязки рейдовой метки",
                     order = 20,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.raidTargetRelAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.raidTargetRelAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.raidTargetRelAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.raidTargetRelAnchor
+                    end
                 },
                 raidTargetScale = {
                     type = "range",
                     name = "Масштаб метки",
                     desc = "Масштаб рейдовой метки",
                     order = 30,
-                    min = 0.1, max = 3.0, step = 0.05,
-                    set = function(info, val) AeonoPlates.db.profile.raidTargetScale = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.raidTargetScale end,
+                    min = 0.1,
+                    max = 3.0,
+                    step = 0.05,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.raidTargetScale = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.raidTargetScale
+                    end
                 },
                 raidTargetOffsetX = {
                     type = "range",
                     name = "Смещение метки X",
                     desc = "Смещение рейдовой метки по X",
                     order = 40,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.raidTargetOffsetX = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.raidTargetOffsetX end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.raidTargetOffsetX = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.raidTargetOffsetX
+                    end
                 },
                 raidTargetOffsetY = {
                     type = "range",
                     name = "Смещение метки Y",
                     desc = "Смещение рейдовой метки по Y",
                     order = 50,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.raidTargetOffsetY = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.raidTargetOffsetY end,
-                },
-            },
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.raidTargetOffsetY = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.raidTargetOffsetY
+                    end
+                }
+            }
         },
 
         -- ============================================
@@ -765,11 +1108,18 @@ local options = {
                     name = "Масштаб петов",
                     desc = "Масштаб фрейма для петов",
                     order = 10,
-                    min = 0.1, max = 2.0, step = 0.05,
-                    set = function(info, val) AeonoPlates.db.profile.petFrameScale = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.petFrameScale end,
-                },
-            },
+                    min = 0.1,
+                    max = 2.0,
+                    step = 0.05,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.petFrameScale = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.petFrameScale
+                    end
+                }
+            }
         },
 
         -- ============================================
@@ -786,34 +1136,58 @@ local options = {
                     name = "Кастбар (союзный игрок)",
                     desc = "Показывать кастбар у дружественных игроков",
                     order = 10,
-                    set = function(info, val) AeonoPlates.db.profile.friendlyPlayerCastBar = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.friendlyPlayerCastBar end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.friendlyPlayerCastBar = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.friendlyPlayerCastBar
+                    end
                 },
                 enemyPlayerCastBar = {
                     type = "toggle",
                     name = "Кастбар (вражеский игрок)",
                     desc = "Показывать кастбар у вражеских игроков",
                     order = 20,
-                    set = function(info, val) AeonoPlates.db.profile.enemyPlayerCastBar = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.enemyPlayerCastBar end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.enemyPlayerCastBar = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.enemyPlayerCastBar
+                    end
                 },
                 friendlyNpcCastBar = {
                     type = "toggle",
                     name = "Кастбар (союзный NPC)",
                     desc = "Показывать кастбар у дружественных NPC",
                     order = 30,
-                    set = function(info, val) AeonoPlates.db.profile.friendlyNpcCastBar = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.friendlyNpcCastBar end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.friendlyNpcCastBar = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.friendlyNpcCastBar
+                    end
                 },
                 enemyNpcCastBar = {
                     type = "toggle",
                     name = "Кастбар (вражеский NPC)",
                     desc = "Показывать кастбар у вражеских NPC",
                     order = 40,
-                    set = function(info, val) AeonoPlates.db.profile.enemyNpcCastBar = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.enemyNpcCastBar end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.enemyNpcCastBar = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.enemyNpcCastBar
+                    end
                 },
-                spacer1 = { type = "description", name = "", order = 45 },
+                spacer1 = {
+                    type = "description",
+                    name = "",
+                    order = 45
+                },
 
                 -- Appearance
                 castBarTex = {
@@ -821,45 +1195,82 @@ local options = {
                     name = "Текстура кастбара",
                     desc = "Текстура полосы каста",
                     order = 50,
-                    values = function() return GetStatusBarList() end,
-                    set = function(info, val) AeonoPlates.db.profile.castBarTex = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarTex end,
+                    values = function()
+                        return GetStatusBarList()
+                    end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarTex = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarTex
+                    end
                 },
                 castBarFadeTime = {
                     type = "range",
                     name = "Время затухания",
                     desc = "Время затухания кастбара после завершения",
                     order = 60,
-                    min = 0, max = 2, step = 0.05,
-                    set = function(info, val) AeonoPlates.db.profile.castBarFadeTime = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarFadeTime end,
+                    min = 0,
+                    max = 2,
+                    step = 0.05,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarFadeTime = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarFadeTime
+                    end
                 },
                 castBarHeight = {
                     type = "range",
                     name = "Высота полосы",
                     desc = "Высота полосы каста",
                     order = 70,
-                    min = 2, max = 40, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.castBarHeight = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarHeight end,
+                    min = 2,
+                    max = 40,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarHeight = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarHeight
+                    end
                 },
                 castBarWidth = {
                     type = "range",
                     name = "Ширина контейнера",
                     desc = "Ширина контейнера кастбара (включая иконку, если она слева/справа)",
                     order = 75,
-                    min = 20, max = 500, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.castBarWidth = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarWidth end,
+                    min = 20,
+                    max = 500,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarWidth = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarWidth
+                    end
                 },
-                spacer_icon = { type = "description", name = "", order = 76 },
+                spacer_icon = {
+                    type = "description",
+                    name = "",
+                    order = 76
+                },
                 castBarShowIcon = {
                     type = "toggle",
                     name = "Показывать иконку",
                     desc = "Показывать иконку заклинания рядом с кастбаром",
                     order = 77,
-                    set = function(info, val) AeonoPlates.db.profile.castBarShowIcon = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarShowIcon end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarShowIcon = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarShowIcon
+                    end
                 },
                 castBarIconSide = {
                     type = "select",
@@ -868,12 +1279,21 @@ local options = {
                     order = 78,
                     values = {
                         LEFT = "LEFT",
-                        RIGHT = "RIGHT",
+                        RIGHT = "RIGHT"
                     },
-                    set = function(info, val) AeonoPlates.db.profile.castBarIconSide = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarIconSide end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarIconSide = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarIconSide
+                    end
                 },
-                spacer2 = { type = "description", name = "", order = 81 },
+                spacer2 = {
+                    type = "description",
+                    name = "",
+                    order = 81
+                },
 
                 -- Position
                 castBarAnchor = {
@@ -882,8 +1302,13 @@ local options = {
                     desc = "Точка привязки кастбара к полосе здоровья",
                     order = 80,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.castBarAnchor = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarAnchor end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarAnchor
+                    end
                 },
                 castBarRelativePoint = {
                     type = "select",
@@ -891,28 +1316,51 @@ local options = {
                     desc = "Относительная точка привязки на полосе здоровья",
                     order = 90,
                     values = anchorOptions,
-                    set = function(info, val) AeonoPlates.db.profile.castBarRelativePoint = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarRelativePoint end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarRelativePoint = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarRelativePoint
+                    end
                 },
                 castBarOffsetX = {
                     type = "range",
                     name = "Смещение кастбара X",
                     desc = "Смещение кастбара по X",
                     order = 100,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.castBarOffsetX = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarOffsetX end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarOffsetX = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarOffsetX
+                    end
                 },
                 castBarOffsetY = {
                     type = "range",
                     name = "Смещение кастбара Y",
                     desc = "Смещение кастбара по Y",
                     order = 110,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.castBarOffsetY = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarOffsetY end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarOffsetY = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarOffsetY
+                    end
                 },
-                spacer3 = { type = "description", name = "", order = 115 },
+                spacer3 = {
+                    type = "description",
+                    name = "",
+                    order = 115
+                },
 
                 -- Colors
                 castBarColor = {
@@ -929,7 +1377,7 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.castBarColor
                         return c[1], c[2], c[3], c[4]
-                    end,
+                    end
                 },
                 castBarSuccessColor = {
                     type = "color",
@@ -945,7 +1393,7 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.castBarSuccessColor
                         return c[1], c[2], c[3], c[4]
-                    end,
+                    end
                 },
                 castBarFailedColor = {
                     type = "color",
@@ -961,7 +1409,7 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.castBarFailedColor
                         return c[1], c[2], c[3], c[4]
-                    end,
+                    end
                 },
                 castBarShieldColor = {
                     type = "color",
@@ -977,7 +1425,7 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.castBarShieldColor
                         return c[1], c[2], c[3], c[4]
-                    end,
+                    end
                 },
                 castBarBgColor = {
                     type = "color",
@@ -993,9 +1441,13 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.castBarBgColor
                         return c[1], c[2], c[3], c[4]
-                    end,
+                    end
                 },
-                spacer4 = { type = "description", name = "", order = 165 },
+                spacer4 = {
+                    type = "description",
+                    name = "",
+                    order = 165
+                },
 
                 -- Text
                 castNameFont = {
@@ -1003,27 +1455,48 @@ local options = {
                     name = "Шрифт названия",
                     desc = "Шрифт имени заклинания",
                     order = 170,
-                    values = function() return GetFontList() end,
-                    set = function(info, val) AeonoPlates.db.profile.castNameFont = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castNameFont end,
+                    values = function()
+                        return GetFontList()
+                    end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castNameFont = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castNameFont
+                    end
                 },
                 castNameSize = {
                     type = "range",
                     name = "Размер шрифта",
                     desc = "Размер шрифта имени заклинания",
                     order = 180,
-                    min = 6, max = 48, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.castNameSize = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castNameSize end,
+                    min = 6,
+                    max = 48,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castNameSize = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castNameSize
+                    end
                 },
                 castNameWidth = {
                     type = "range",
                     name = "Ширина текста",
                     desc = "Максимальная ширина имени заклинания",
                     order = 190,
-                    min = 20, max = 500, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.castNameWidth = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castNameWidth end,
+                    min = 20,
+                    max = 500,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castNameWidth = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castNameWidth
+                    end
                 },
                 castNameFlags = {
                     type = "select",
@@ -1031,8 +1504,13 @@ local options = {
                     desc = "Флаги шрифта имени заклинания",
                     order = 200,
                     values = flagOptions,
-                    set = function(info, val) AeonoPlates.db.profile.castNameFlags = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castNameFlags end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castNameFlags = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castNameFlags
+                    end
                 },
                 castNameColor = {
                     type = "color",
@@ -1048,27 +1526,45 @@ local options = {
                     get = function(info)
                         local c = AeonoPlates.db.profile.castNameColor
                         return c[1], c[2], c[3], c[4]
-                    end,
+                    end
                 },
                 castNameOffsetX = {
                     type = "range",
                     name = "Смещение названия X",
                     desc = "Смещение имени заклинания по X",
                     order = 220,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.castNameOffsetX = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castNameOffsetX end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castNameOffsetX = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castNameOffsetX
+                    end
                 },
                 castNameOffsetY = {
                     type = "range",
                     name = "Смещение названия Y",
                     desc = "Смещение имени заклинания по Y",
                     order = 230,
-                    min = -200, max = 200, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.castNameOffsetY = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castNameOffsetY end,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castNameOffsetY = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castNameOffsetY
+                    end
                 },
-                spacer5 = { type = "description", name = "", order = 235 },
+                spacer5 = {
+                    type = "description",
+                    name = "",
+                    order = 235
+                },
 
                 -- Spark
                 castBarSparkWidth = {
@@ -1076,22 +1572,36 @@ local options = {
                     name = "Ширина спарка",
                     desc = "Ширина спарка",
                     order = 240,
-                    min = 4, max = 64, step = 1,
-                    set = function(info, val) AeonoPlates.db.profile.castBarSparkWidth = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarSparkWidth end,
+                    min = 4,
+                    max = 64,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarSparkWidth = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarSparkWidth
+                    end
                 },
                 castBarSparkHeightMultiplier = {
                     type = "range",
                     name = "Множитель высоты спарка",
                     desc = "Множитель высоты спарка относительно высоты бара",
                     order = 250,
-                    min = 0.5, max = 3.0, step = 0.1,
-                    set = function(info, val) AeonoPlates.db.profile.castBarSparkHeightMultiplier = val; AeonoPlates:RefreshAllPlates() end,
-                    get = function(info) return AeonoPlates.db.profile.castBarSparkHeightMultiplier end,
-                },
-            },
-        },
-    },
+                    min = 0.5,
+                    max = 3.0,
+                    step = 0.1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarSparkHeightMultiplier = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarSparkHeightMultiplier
+                    end
+                }
+            }
+        }
+    }
 }
 
 -- Сохраняем таблицу настроек в аддон (регистрация происходит в core.lua:OnInitialize)

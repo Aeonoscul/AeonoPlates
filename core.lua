@@ -6,204 +6,6 @@
 -- Регистрация аддона (глобал для доступа из options.lua и других файлов)
 AeonoPlates = LibStub("AceAddon-3.0"):NewAddon("AeonoPlates", "AceEvent-3.0", "AceHook-3.0", "AceConsole-3.0")
 
--- Дефолтные настройки (строковые ключи для anchor/flags)
-local defaults = {
-    profile = {
-        -- ============================================
-        -- NAME SETTINGS
-        -- ============================================
-        nameFont = "Fonts\\FRIZQT__.TTF",
-        nameFlags = "OUTLINE",
-        nameWidth = 140,
-        nameFriendlyPlayerSize = 20,
-        nameEnemyPlayerSize = 16,
-        nameFriendlyNpcSize = 18,
-        nameEnemyNpcSize = 14,
-        nameAnchor = "BOTTOM",
-        nameRelAnchor = "TOP",
-        nameOffsetX = 0,
-        nameOffsetY = 2,
-        onlyNameAnchor = "CENTER",
-        onlyNameOffsetX = 0,
-        onlyNameOffsetY = 0,
-        onlyNameWidth = 120,
-
-        -- ============================================
-        -- HEALTH SETTINGS
-        -- ============================================
-        healthTexture = "Interface\\TargetingFrame\\UI-StatusBar",
-        showHealthText = true,
-        showHealthPercent = true,
-        shortenHealth = true,
-        healthFont = "Fonts\\FRIZQT__.TTF",
-        healthSize = 14,
-        healthFlags = "OUTLINE",
-        healthAnchor = "CENTER",
-        healthRelAnchor = "CENTER",
-        healthOffsetX = 0,
-        healthOffsetY = 0,
-        healthPercentSize = 12,
-        healthPercentAnchor = "RIGHT",
-        healthPercentRelAnchor = "RIGHT",
-        healthPercentOffsetX = -2,
-        healthPercentOffsetY = 0,
-
-        -- ============================================
-        -- ICON SETTINGS
-        -- ============================================
-        showEnemyClassIcons = false,
-        showFriendlyClassIcons = true,
-        showEnemyTotemIcons = true,
-        showFriendlyTotemIcons = true,
-        iconSize = 40,
-        totemIconSize = 30,
-        iconAnchor = "BOTTOM",
-        iconRelAnchor = "TOP",
-        iconOffsetX = 0,
-        iconOffsetY = 0,
-
-        -- ============================================
-        -- BORDER SETTINGS
-        -- ============================================
-        borderTexture = "Interface\\Buttons\\WHITE8X8",
-        borderPadding = 1,
-        borderThickness = 1,
-        borderTargetColor = {1, 1, 1, 1},
-        borderMouseoverColor = {0, 1, 1, 1},
-        borderCombatColor = {1, 0, 0, 1},
-        borderDefaultColor = {0, 0, 0, 1},
-
-        -- ============================================
-        -- THREAT SETTINGS
-        -- ============================================
-        threatHighColor = {0, 1, 0, 1},
-        threatLowColor = {1, 0, 0, 1},
-        threatAggroColor = {1, 1, 0, 1},
-
-        -- ============================================
-        -- CLASSIFICATION
-        -- ============================================
-        showClassification = true,
-        classificationSize = 30,
-        classificationAnchor = "RIGHT",
-        classificationRelAnchor = "LEFT",
-        classificationOffsetX = -5,
-        classificationOffsetY = 0,
-
-        -- ============================================
-        -- RAID TARGET
-        -- ============================================
-        raidTargetAnchor = "LEFT",
-        raidTargetRelAnchor = "RIGHT",
-        raidTargetScale = 1.25,
-        raidTargetOffsetX = 2,
-        raidTargetOffsetY = 0,
-
-        -- ============================================
-        -- SCALE SETTINGS
-        -- ============================================
-        petFrameScale = 0.8,
-
-        -- ============================================
-        -- CASTBAR SETTINGS
-        -- ============================================
-        friendlyPlayerCastBar = true,
-        enemyPlayerCastBar = true,
-        friendlyNpcCastBar = false,
-        enemyNpcCastBar = true,
-        castBarTex = "Interface\\TargetingFrame\\UI-StatusBar",
-        castBarFadeTime = 0.5,
-        castBarHeight = 16,
-        castBarWidth = 120,
-        castBarShowIcon = true,
-        castBarIconSide = "LEFT",
-        castBarIconOffsetX = 0,
-        castBarIconOffsetY = 0,
-        castBarAnchor = "TOP",
-        castBarRelativePoint = "BOTTOM",
-        castBarOffsetX = 0,
-        castBarOffsetY = -3,
-        castBarColor = {1, 1, 0, 1},
-        castBarSuccessColor = {0, 1, 0, 1},
-        castBarFailedColor = {1, 0, 0, 1},
-        castBarShieldColor = {0.5, 0.5, 1, 1},
-        castBarBgColor = {0, 0, 0, 0.5},
-        castNameFont = "Fonts\\FRIZQT__.TTF",
-        castNameSize = 10,
-        castNameWidth = 100,
-        castNameFlags = "OUTLINE",
-        castNameColor = {1, 1, 1, 1},
-        castNameOffsetX = 0,
-        castNameOffsetY = 0,
-        castBarSparkWidth = 20,
-        castBarSparkHeightMultiplier = 2
-    }
-}
-
--- Троттлинг-таблицы
-local combatThrottle = {}
-local _targetThrottle = 0
-local _mouseoverThrottle = 0
-
--- Состояние mouseover
-local _prevMouseoverFrame = nil
-
--- ============================================
--- ИНИЦИАЛИЗАЦИЯ LSM — конвертация имён в пути
--- ============================================
-local function InitLSM()
-    local LSM = LibStub("LibSharedMedia-3.0", true)
-    if not LSM then
-        return
-    end
-
-    local db = AeonoPlates.db.profile
-
-    -- Если в db.profile хранится имя (не путь), конвертируем в путь
-    if db.nameFont and not db.nameFont:find("\\") and not db.nameFont:find("/") then
-        local path = LSM:Fetch("font", db.nameFont)
-        if path then
-            db.nameFont = path
-        end
-    end
-
-    if db.healthFont and not db.healthFont:find("\\") and not db.healthFont:find("/") then
-        local path = LSM:Fetch("font", db.healthFont)
-        if path then
-            db.healthFont = path
-        end
-    end
-
-    if db.healthTexture and not db.healthTexture:find("\\") and not db.healthTexture:find("/") then
-        local path = LSM:Fetch("statusbar", db.healthTexture)
-        if path then
-            db.healthTexture = path
-        end
-    end
-
-    if db.borderTexture and not db.borderTexture:find("\\") and not db.borderTexture:find("/") then
-        local path = LSM:Fetch("border", db.borderTexture)
-        if path then
-            db.borderTexture = path
-        end
-    end
-
-    -- Конвертация настроек кастбара
-    if db.castBarTex and not db.castBarTex:find("\\") and not db.castBarTex:find("/") then
-        local path = LSM:Fetch("statusbar", db.castBarTex)
-        if path then
-            db.castBarTex = path
-        end
-    end
-
-    if db.castNameFont and not db.castNameFont:find("\\") and not db.castNameFont:find("/") then
-        local path = LSM:Fetch("font", db.castNameFont)
-        if path then
-            db.castNameFont = path
-        end
-    end
-end
-
 -- ============================================
 -- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ХУКОВ
 -- ============================================
@@ -253,60 +55,44 @@ local function HideBorder(frame)
     end
 end
 -- ============================================
--- MOUSEOVER
+-- FRAME LEVEL
 -- ============================================
-local function UpdateMouseoverFrameLevel(frame, data)
-    local isMouseover = UnitIsUnit(data.unit, "mouseover")
+local _prevMouseoverFrame = nil
+local _prevTargetFrame = nil
+
+local function UpdateFrameLevel(frame, data)
+    if not frame then return end
+
     local isTarget = UnitIsUnit(data.unit, "target")
-    local isMouseoverOnly = isMouseover and not isTarget
+    local isMouseover = UnitIsUnit(data.unit, "mouseover")
 
-    if isMouseoverOnly then
-        if not frame._origFrameLevel then
-            frame._origFrameLevel = frame:GetFrameLevel()
-        end
-        frame:SetFrameLevel(frame:GetFrameLevel() + 100)
+    local newOffset = 0
+    if isTarget and isMouseover then
+        newOffset = 300
+        _prevTargetFrame = frame
         _prevMouseoverFrame = frame
-
-        -- Поднимаем frame level кастбара вместе с фреймом
-        local cb = frame._pureCB
-        if cb and cb.container then
-            cb.container:SetFrameLevel(frame:GetFrameLevel())
-        end
-    else
-        if frame._origFrameLevel then
-            frame:SetFrameLevel(frame._origFrameLevel)
-            frame._origFrameLevel = nil
-
-            -- Восстанавливаем frame level кастбара
-            local cb = frame._pureCB
-            if cb and cb.container then
-                cb.container:SetFrameLevel(frame:GetFrameLevel())
-            end
-        end
+    elseif isTarget then
+        newOffset = 200
+        _prevTargetFrame = frame
+    elseif isMouseover then
+        newOffset = 100
+        _prevMouseoverFrame = frame
     end
-end
 
-local function ResetMouseoverState()
-    if _prevMouseoverFrame then
-        local prev = _prevMouseoverFrame
-        if prev._origFrameLevel then
-            prev:SetFrameLevel(prev._origFrameLevel)
-            prev._origFrameLevel = nil
+    local oldOffset = frame._currentOffset or 0
+    if newOffset == oldOffset then
+        return  -- ничего не меняется
+    end
 
-            -- Восстанавливаем frame level кастбара
-            local cb = prev._pureCB
-            if cb and cb.container then
-                cb.container:SetFrameLevel(prev:GetFrameLevel())
-            end
-        end
-        -- Сброс цвета границы: получаем полные данные юнита и вызываем UpdateCustomBorder
-        if prev then
-            local data = GetUnitData(prev)
-            if data then
-                UpdateCustomBorder(prev, data, AeonoPlates.db.profile)
-            end
-        end
-        _prevMouseoverFrame = nil
+    local currentLevel = frame:GetFrameLevel()
+    local newLevel = currentLevel - oldOffset + newOffset
+    frame:SetFrameLevel(newLevel)
+
+    frame._currentOffset = newOffset
+
+    local cb = frame._pureCB
+    if cb and cb.container then
+        cb.container:SetFrameLevel(newLevel)
     end
 end
 
@@ -387,7 +173,6 @@ function AeonoPlates:UpdateStyle(frame)
     UpdateNameText(frame, data, db)
     UpdateHealthValueText(frame, data, db)
     UpdateHealthPercText(frame, data, db)
-    -- Обновляем значения текста здоровья
     if db.showHealthText or db.showHealthPercent then
         self:UpdateHealthValues(frame, data.unit, db)
     end
@@ -395,7 +180,7 @@ function AeonoPlates:UpdateStyle(frame)
     UpdateClassification(frame, data, db)
     UpdateRaidTarget(frame, data, db)
     UpdateFrameScale(frame, data, db)
-    UpdateMouseoverFrameLevel(frame, data)
+    UpdateFrameLevel(frame, data)
     UpdateCustomBorder(frame, data, db)
     UpdateThreatIndicator(frame, data, db)
 
@@ -447,6 +232,7 @@ function AeonoPlates:OnNamePlateAdded(event, unit)
     end
 end
 
+local combatThrottle = {}
 function AeonoPlates:OnUnitCombat(event, unit, action)
     if unit and unit:find("nameplate") and (action == "WOUND" or action == "HEAL") then
         local guid = UnitGUID(unit)
@@ -490,43 +276,48 @@ function AeonoPlates:OnThreatUpdate(event, unit)
 end
 
 function AeonoPlates:OnTargetChanged()
-    ResetMouseoverState()
+    if _prevTargetFrame then
+        local data = GetUnitData(_prevTargetFrame)
+        if data then
+            UpdateFrameLevel(_prevTargetFrame, data)
+            UpdateCustomBorder(_prevTargetFrame, data, self.db.profile)
+        end
+        _prevTargetFrame = nil
+    end
 
-    local now = GetTime()
-    if now - _targetThrottle > 0.08 then
-        _targetThrottle = now
-        local frames = C_NamePlate.GetNamePlates()
-        local db = self.db.profile
-        for i = 1, #frames do
-            local frame = frames[i]
-            local u = frame.unit or (frame.UnitFrame and frame.UnitFrame.unit)
-            if u then
-                local targetFrame = frame.UnitFrame or frame
-                local data = GetUnitData(targetFrame)
-                if data then
-                    UpdateCustomBorder(targetFrame, data, db)
-                end
+    local newTargetFrame = C_NamePlate.GetNamePlateForUnit("target")
+    if newTargetFrame then
+        local targetFrame = newTargetFrame.UnitFrame or newTargetFrame
+        local unit = targetFrame.unit
+        if unit and unit:find("nameplate") then
+            local data = GetUnitData(targetFrame)
+            if data then
+                UpdateFrameLevel(targetFrame, data)
+                UpdateCustomBorder(targetFrame, data, self.db.profile)
             end
         end
     end
 end
 
 function AeonoPlates:OnMouseoverChanged()
-    local now = GetTime()
-    if now - _mouseoverThrottle > 0.08 then
-        _mouseoverThrottle = now
-        local frames = C_NamePlate.GetNamePlates()
-        local db = self.db.profile
-        for i = 1, #frames do
-            local frame = frames[i]
-            local u = frame.unit or (frame.UnitFrame and frame.UnitFrame.unit)
-            if u then
-                local targetFrame = frame.UnitFrame or frame
-                local data = GetUnitData(targetFrame)
-                if data then
-                    UpdateMouseoverFrameLevel(targetFrame, data)
-                    UpdateCustomBorder(targetFrame, data, db)
-                end
+    if _prevMouseoverFrame then
+        local data = GetUnitData(_prevMouseoverFrame)
+        if data then
+            UpdateFrameLevel(_prevMouseoverFrame, data)
+            UpdateCustomBorder(_prevMouseoverFrame, data, self.db.profile)
+        end
+        _prevMouseoverFrame = nil
+    end
+
+    local newMouseoverFrame = C_NamePlate.GetNamePlateForUnit("mouseover")
+    if newMouseoverFrame then
+        local targetFrame = newMouseoverFrame.UnitFrame or newMouseoverFrame
+        local unit = targetFrame.unit
+        if unit and unit:find("nameplate") then
+            local data = GetUnitData(targetFrame)
+            if data then
+                UpdateFrameLevel(targetFrame, data)
+                UpdateCustomBorder(targetFrame, data, self.db.profile)
             end
         end
     end
@@ -683,8 +474,7 @@ function AeonoPlates:OnEnable()
         end)
     end
 
-    -- OnUpdate-поллинг для mouseover (страховка) — без изменений
-    if not self._mouseoverPollFrame then
+    if not self._PollFrame then
         local pollFrame = CreateFrame("Frame")
         local lastCheck = 0
         pollFrame:SetScript("OnUpdate", function()
@@ -694,27 +484,31 @@ function AeonoPlates:OnEnable()
             end
             lastCheck = now
 
-            if not UnitExists("mouseover") and _prevMouseoverFrame then
-                local prev = _prevMouseoverFrame
-                if prev._origFrameLevel then
-                    prev:SetFrameLevel(prev._origFrameLevel)
-                    prev._origFrameLevel = nil
-
-                    local cb = prev._pureCB
-                    if cb and cb.container then
-                        cb.container:SetFrameLevel(prev:GetFrameLevel())
-                    end
-                end
-                if prev then
-                    local data = GetUnitData(prev)
+            if _prevMouseoverFrame then
+                local unit = _prevMouseoverFrame.unit or
+                                 (_prevMouseoverFrame.UnitFrame and _prevMouseoverFrame.UnitFrame.unit)
+                if not unit or not UnitIsUnit(unit, "mouseover") then
+                    local data = GetUnitData(_prevMouseoverFrame)
                     if data then
-                        UpdateCustomBorder(prev, data, AeonoPlates.db.profile)
+                        UpdateFrameLevel(_prevMouseoverFrame, data)
+                        UpdateCustomBorder(_prevMouseoverFrame, data, AeonoPlates.db.profile)
                     end
+                    _prevMouseoverFrame = nil
                 end
-                _prevMouseoverFrame = nil
+            end
+            if _prevTargetFrame then
+                local unit = _prevTargetFrame.unit or (_prevTargetFrame.UnitFrame and _prevTargetFrame.UnitFrame.unit)
+                if not unit or not UnitIsUnit(unit, "target") then
+                    local data = GetUnitData(_prevTargetFrame)
+                    if data then
+                        UpdateFrameLevel(_prevTargetFrame, data)
+                        UpdateCustomBorder(_prevTargetFrame, data, AeonoPlates.db.profile)
+                    end
+                    _prevTargetFrame = nil
+                end
             end
         end)
-        self._mouseoverPollFrame = pollFrame
+        self._pollFrame = pollFrame
     end
 
     -- ВОТ ЗДЕСЬ ЗАМЕНА: создаём динамический OnUpdate-фрейм для кастбара
@@ -728,9 +522,9 @@ function AeonoPlates:OnDisable()
     self:UnhookAll()
     self:UnregisterAllEvents()
 
-    if self._mouseoverPollFrame then
-        self._mouseoverPollFrame:SetScript("OnUpdate", nil)
-        self._mouseoverPollFrame = nil
+    if self._pollFrame then
+        self._pollFrame:SetScript("OnUpdate", nil)
+        self._pollFrame = nil
     end
 
     -- Очищаем активные бары (OnUpdate-фрейм сам скроется)
@@ -761,7 +555,7 @@ function AeonoPlates:RegisterMinimapIcon()
         OnTooltipShow = function(tooltip)
             tooltip:AddLine("AeonoPlates")
             tooltip:AddLine("Нажмите для открытия настроек")
-        end,
+        end
     })
     icon:Register("AeonoPlates", dataobj, self.db.profile)
 end

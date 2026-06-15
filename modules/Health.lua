@@ -1,9 +1,7 @@
 --[[
     modules/Health.lua — AeonoPlates
     Настройки здоровья: текстура бара, текст HP, процент HP
-]]
-
--- Обновление текстуры статус-бара
+]] -- Обновление текстуры статус-бара
 function UpdateHealthBarTexture(frame, data, db)
     if not frame.healthBar then
         return
@@ -34,7 +32,9 @@ end
 -- Обновление текста здоровья
 function UpdateHealthValueText(frame, data, db)
     if not frame.healthBar or data.isOnlyNameMode or data.isTotemIcon then
-        if frame.healthText then frame.healthText:Hide() end
+        if frame.healthText then
+            frame.healthText:Hide()
+        end
         return
     end
 
@@ -51,13 +51,16 @@ function UpdateHealthValueText(frame, data, db)
         frame.healthText:SetParent(parent)
     end
 
-    SetTextST(frame.healthText, db.healthFont, db.healthSize, db.healthFlags, db.healthAnchor, parent, db.healthRelAnchor, db.healthOffsetX, db.healthOffsetY, data.alpha)
+    SetTextST(frame.healthText, db.healthFont, db.healthSize, db.healthFlags, db.healthAnchor, parent,
+        db.healthRelAnchor, db.healthOffsetX, db.healthOffsetY, data.alpha)
 end
 
 -- Обновление процента здоровья
 function UpdateHealthPercText(frame, data, db)
     if not frame.healthBar or data.isOnlyNameMode or data.isTotemIcon then
-        if frame.percText then frame.percText:Hide() end
+        if frame.percText then
+            frame.percText:Hide()
+        end
         return
     end
 
@@ -65,6 +68,7 @@ function UpdateHealthPercText(frame, data, db)
 
     if not frame.percText then
         frame.percText = parent:CreateFontString(nil, "BACKGROUND")
+        frame.percText:SetDrawLayer("BACKGROUND", 7)
         frame.percText:SetTextColor(1, 1, 1)
         -- Дефолтный шрифт, чтобы избежать "Font not set"
         frame.percText:SetFont("Fonts\\FRIZQT__.TTF", 10, "OUTLINE")
@@ -74,14 +78,19 @@ function UpdateHealthPercText(frame, data, db)
         frame.percText:SetParent(parent)
     end
 
-    SetTextST(frame.percText, db.healthFont, db.healthPercentSize, db.healthFlags, db.healthPercentAnchor, parent, db.healthPercentRelAnchor, db.healthPercentOffsetX, db.healthPercentOffsetY, data.alpha)
+    SetTextST(frame.percText, db.healthFont, db.healthPercentSize, db.healthFlags, db.healthPercentAnchor, parent,
+        db.healthPercentRelAnchor, db.healthPercentOffsetX, db.healthPercentOffsetY, data.alpha)
 end
 
 -- Обновление значений здоровья (вызывается из UNIT_COMBAT и UpdateStyle)
 function UpdateHealthValues(frame, unit, db)
-    if not frame or not unit or UnitIsUnit(unit, "player") then return end
+    if not frame or not unit or UnitIsUnit(unit, "player") then
+        return
+    end
 
-    if not db.showHealthText and not db.showHealthPercent then return end
+    if not db.showHealthText and not db.showHealthPercent then
+        return
+    end
 
     local hp, max = UnitHealth(unit), UnitHealthMax(unit)
 

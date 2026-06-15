@@ -1,16 +1,13 @@
 --[[
     modules/Icon.lua — AeonoPlates
     Иконки классов и тотемов
-]]
-
-local ADDON_PATH = "Interface\\Addons\\AeonoPlates\\media\\"
+]] local ADDON_PATH = "Interface\\Addons\\AeonoPlates\\media\\"
 
 -- Обновление иконки юнита (класс/тотем)
 function UpdateUnitIcon(frame, data, db)
     local isTotemIcon = data.isTotemIcon
     local isPlayer = data.isPlayer
     local isFriend = data.isFriend
-    local alpha = data.alpha
     local totemData = data.totemData
     local curIconSize = isTotemIcon and db.totemIconSize or db.iconSize
 
@@ -29,6 +26,7 @@ function UpdateUnitIcon(frame, data, db)
 
         if not frame.classIcon then
             frame.classIcon = parent:CreateTexture(nil, "BACKGROUND")
+            frame.classIcon:SetDrawLayer("BACKGROUND", 7)
         end
 
         if frame.classIcon:GetParent() ~= parent then
@@ -41,7 +39,7 @@ function UpdateUnitIcon(frame, data, db)
         local x = isTotemIcon and 0 or db.iconOffsetX
         local y = isTotemIcon and 5 or db.iconOffsetY
 
-        SetIconST(frame.classIcon, iconPath, curIconSize, curIconSize, anchor, parent, relAnchor, x, y, alpha)
+        SetIconST(frame.classIcon, iconPath, curIconSize, curIconSize, anchor, parent, relAnchor, x, y, data.alpha)
     elseif frame.classIcon then
         frame.classIcon:Hide()
     end
