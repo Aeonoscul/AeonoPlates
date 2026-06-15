@@ -1,9 +1,7 @@
 --[[
     modules/Name.lua — AeonoPlates
     Настройки имени: кастомное имя, скрытие оригинального
-]]
-
--- Обновление кастомного имени
+]] -- Обновление кастомного имени
 function UpdateNameText(frame, data, db)
     if data.isTotemIcon then
         if frame.customName then
@@ -12,8 +10,8 @@ function UpdateNameText(frame, data, db)
         return
     end
 
-    local size = data.isPlayer and (data.isFriend and db.nameFriendlyPlayerSize or db.nameEnemyPlayerSize)
-                or (data.isFriend and db.nameFriendlyNpcSize or db.nameEnemyNpcSize)
+    local size = data.isPlayer and (data.isFriend and db.nameFriendlyPlayerSize or db.nameEnemyPlayerSize) or
+                     (data.isFriend and db.nameFriendlyNpcSize or db.nameEnemyNpcSize)
     local maxWidth = data.isOnlyNameMode and db.onlyNameWidth or (db.nameWidth or 100)
 
     -- Кэшируем результат SmartTruncate для статичных имён
@@ -24,10 +22,12 @@ function UpdateNameText(frame, data, db)
     end
     local finalName = frame.lastNameResult
 
-    local parent = (not data.isOnlyNameMode and frame.healthBar and frame.healthBar:IsShown()) and frame.healthBar.overlay or frame
+    local parent = (not data.isOnlyNameMode and frame.healthBar and frame.healthBar:IsShown()) and
+                       frame.healthBar.overlay or frame
 
     if not frame.customName then
         frame.customName = parent:CreateFontString(nil, "BACKGROUND")
+        frame.customName:SetDrawLayer("BACKGROUND", 7)
     end
 
     if frame.customName:GetParent() ~= parent then
@@ -38,7 +38,6 @@ function UpdateNameText(frame, data, db)
     local rel = data.isOnlyNameMode and db.onlyNameAnchor or db.nameRelAnchor
     local x = data.isOnlyNameMode and db.onlyNameOffsetX or db.nameOffsetX
     local y = data.isOnlyNameMode and db.onlyNameOffsetY or db.nameOffsetY
-    local alpha = data.alpha or 1
 
     local r, g, b, a
     if frame.name then
@@ -50,6 +49,7 @@ function UpdateNameText(frame, data, db)
         r, g, b = 1, 1, 1
     end
 
-    SetTextST(frame.customName, db.nameFont, size, db.nameFlags, anchor, parent, rel, x, y, alpha, finalName, { r, g, b, a })
+    SetTextST(frame.customName, db.nameFont, size, db.nameFlags, anchor, parent, rel, x, y, data.alpha, finalName,
+        {r, g, b, a})
     frame.customName:Show()
 end

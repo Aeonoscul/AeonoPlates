@@ -4,13 +4,15 @@
     Использует родной healthBar:SetStatusBarColor().
     Сохраняет оригинальный цвет бара для восстановления.
     Не применяется к игрокам, тотемам и режиму только-имя.
-]]
-
-function UpdateThreatIndicator(frame, data, db)
-    if not frame.healthBar then return end
+]] function UpdateThreatIndicator(frame, data, db)
+    if not frame.healthBar then
+        return
+    end
 
     -- Не применяем к игрокам, тотемам и режиму только-имя
-    if data.isPlayer or data.isTotemIcon or data.isOnlyNameMode then return end
+    if data.isPlayer or data.isTotemIcon or data.isOnlyNameMode then
+        return
+    end
 
     local threat = UnitThreatSituation("player", data.unit)
 
@@ -18,7 +20,7 @@ function UpdateThreatIndicator(frame, data, db)
         -- Сохраняем оригинальный цвет перед первым изменением
         if not frame._origBarColor then
             local r, g, b = frame.healthBar:GetStatusBarColor()
-            frame._origBarColor = { r, g, b }
+            frame._origBarColor = {r, g, b}
         end
 
         local color
