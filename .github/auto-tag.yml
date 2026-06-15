@@ -1,0 +1,53 @@
+name: Auto Tag on TOC Update
+
+on:
+  push:
+    branches:
+      - main  # Измените на master, если ваша ветка называется так
+    paths:
+      - '**/*.toc'  # Запуск только при изменении .toc файлов
+
+jobs:
+  create-tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Разрешаем пуш тегов в репозиторий
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version from .toc
+        id: read_version
+        run: |
+          TOC_FILE=$(find . -maxdepth 2 -name "*.toc" | head -n 1)
+          if [ -z "$TOC_FILE" ]; then
+            echo "Ошибка: .toc файл не найден!"
+            exit 1
+          fi
+          
+          # Извлекаем версию, удаляем пробелы и спецсимволы Windows (\r)
+          VERSION=$(grep -i "## Version:" "$TOC_FILE" | awk -F ':' '{print $2}' | tr -d ' \r\n')
+          if [ -z "$VERSION" ]; then
+            echo "Ошибка: Строка '## Version:' пустая или не найдена!"
+            exit 1
+          fi
+          
+          echo "Найдена версия: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create and Push Tag
+        run: |
+          TAG_NAME="${{ steps.read_version.outputs.version }}"
+          
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@://github.com"
+          
+          git fetch --tags
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Тег $TAG_NAME уже существует. Пропускаем."
+          else
+            echo "Создаем и пушим тег $TAG_NAME..."
+            git tag "$TAG_NAME"
+            git push origin "$TAG_NAME"
+          fi
