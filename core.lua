@@ -232,7 +232,6 @@ function AeonoPlates:OnNamePlateAdded(event, unit)
     end
 end
 
-local combatThrottle = {}
 function AeonoPlates:OnUnitCombat(event, unit, action)
     if unit and unit:find("nameplate") and (action == "WOUND" or action == "HEAL") then
         local guid = UnitGUID(unit)
@@ -520,6 +519,7 @@ function AeonoPlates:OnEnable()
                     if data then
                         UpdateCustomBorder(targetFrame, data, AeonoPlates.db.profile)
                     end
+                    _prevTargetFrame = nil
                 end
             end
         end)
