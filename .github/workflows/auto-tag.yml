@@ -3,7 +3,7 @@ name: Auto Release on TOC Update
 on:
   push:
     branches:
-      - main  # Ваша основная ветка
+      - main
     paths:
       - '**/*.toc'
 
@@ -11,7 +11,7 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Нужно для создания тегов и релизов
+      contents: write
 
     steps:
       - name: Checkout code
@@ -33,19 +33,18 @@ jobs:
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      # 2. Создаем чистый .zip архив (он автоматически учтет .gitattributes и удалит .github)
       - name: Create Archive
         run: |
+          REPO_NAME="${{ github.event.repository.name }}"
           TAG_NAME="${{ steps.read_version.outputs.version }}"
-          # Создаем zip-архив с именем "Имя_Аддона-Версия.zip"
-          git archive --format=zip HEAD -o "addon-${TAG_NAME}.zip"
+          
+          git archive --format=zip HEAD --prefix="${REPO_NAME}/" -o "${REPO_NAME}-${TAG_NAME}.zip"
 
-      # 3. Пушим тег и автоматически создаем GitHub Release с прикрепленным архивом
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.read_version.outputs.version }}
-          name: Release ${{ steps.read_version.outputs.version }}
-          files: addon-${{ steps.read_version.outputs.version }}.zip
+          name: v${{ steps.read_version.outputs.version }}
+          files: ${{ github.event.repository.name }}-${{ steps.read_version.outputs.version }}.zip
           draft: false
           prerelease: false
