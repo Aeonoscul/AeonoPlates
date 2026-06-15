@@ -1,0 +1,51 @@
+name: Auto Release on TOC Update
+
+on:
+  push:
+    branches:
+      - main  # Ваша основная ветка
+    paths:
+      - '**/*.toc'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Нужно для создания тегов и релизов
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 1. Читаем версию из файла
+      - name: Get version from .toc
+        id: read_version
+        run: |
+          TOC_FILE=$(find . -maxdepth 2 -name "*.toc" | head -n 1)
+          if [ -z "$TOC_FILE" ]; then
+            echo "Ошибка: .toc файл не найден!"
+            exit 1
+          fi
+          VERSION=$(grep -i "## Version:" "$TOC_FILE" | awk -F ':' '{print $2}' | tr -d ' \r\n')
+          if [ -z "$VERSION" ]; then
+            echo "Ошибка: Строка '## Version:' пустая!"
+            exit 1
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      # 2. Создаем чистый .zip архив (он автоматически учтет .gitattributes и удалит .github)
+      - name: Create Archive
+        run: |
+          TAG_NAME="${{ steps.read_version.outputs.version }}"
+          # Создаем zip-архив с именем "Имя_Аддона-Версия.zip"
+          git archive --format=zip HEAD -o "addon-${TAG_NAME}.zip"
+
+      # 3. Пушим тег и автоматически создаем GitHub Release с прикрепленным архивом
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.read_version.outputs.version }}
+          name: Release ${{ steps.read_version.outputs.version }}
+          files: addon-${{ steps.read_version.outputs.version }}.zip
+          draft: false
+          prerelease: false
