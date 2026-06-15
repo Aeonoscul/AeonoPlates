@@ -520,6 +520,7 @@ function AeonoPlates:OnEnable()
                     if data then
                         UpdateCustomBorder(targetFrame, data, AeonoPlates.db.profile)
                     end
+                    _prevTargetFrame = nil
                 end
             end
         end)
