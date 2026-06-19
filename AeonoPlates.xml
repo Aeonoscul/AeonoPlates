@@ -13,6 +13,7 @@
 	<Script file="lib\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
 	<Include file="lib\LibDBIcon-1.0\lib.xml"/>
 	<!-- Core & Utilities -->
+	<Script file="profiles.lua"/>
 	<Script file="shared.lua"/>
 
 	<!-- Modules -->
@@ -20,7 +21,7 @@
 	<Script file="modules\Health.lua"/>
 	<Script file="modules\Icon.lua"/>
 	<Script file="modules\Border.lua"/>
-	<Script file="modules\Threat.lua"/>
+	<Script file="modules\Color.lua"/>
 	<Script file="modules\Classification.lua"/>
 	<Script file="modules\RaidTarget.lua"/>
 	<Script file="modules\Scale.lua"/>

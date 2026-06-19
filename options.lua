@@ -5,73 +5,6 @@
 AeonoPlates = LibStub("AceAddon-3.0"):GetAddon("AeonoPlates")
 
 -- ============================================
--- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
--- ============================================
-
--- Получение списка шрифтов из LSM (key = path, value = name для AceConfig select)
-local function GetFontList()
-    local LSM = LibStub("LibSharedMedia-3.0", true)
-    if not LSM then
-        return {}
-    end
-    local list = LSM:HashTable("font")
-    local result = {}
-    for key, path in pairs(list) do
-        result[path] = key
-    end
-    return result
-end
-
--- Получение списка текстур из LSM (key = path, value = name)
-local function GetStatusBarList()
-    local LSM = LibStub("LibSharedMedia-3.0", true)
-    if not LSM then
-        return {}
-    end
-    local list = LSM:HashTable("statusbar")
-    local result = {}
-    for key, path in pairs(list) do
-        result[path] = key
-    end
-    return result
-end
-
--- Получение списка бордеров из LSM (key = path, value = name)
-local function GetBorderList()
-    local LSM = LibStub("LibSharedMedia-3.0", true)
-    if not LSM then
-        return {}
-    end
-    local list = LSM:HashTable("border")
-    local result = {}
-    for key, path in pairs(list) do
-        result[path] = key
-    end
-    return result
-end
-
--- Список точек привязки
-local anchorOptions = {
-    TOP = "TOP",
-    BOTTOM = "BOTTOM",
-    LEFT = "LEFT",
-    RIGHT = "RIGHT",
-    CENTER = "CENTER",
-    TOPLEFT = "TOPLEFT",
-    BOTTOMLEFT = "BOTTOMLEFT",
-    TOPRIGHT = "TOPRIGHT",
-    BOTTOMRIGHT = "BOTTOMRIGHT"
-}
-
--- Список флагов шрифта
-local flagOptions = {
-    NONE = "None",
-    MONOCHROME = "MONOCHROME",
-    OUTLINE = "OUTLINE",
-    THICKOUTLINE = "THICKOUTLINE"
-}
-
--- ============================================
 -- СТРУКТУРА НАСТРОЕК
 -- ============================================
 local options = {
@@ -118,6 +51,32 @@ local options = {
                         return AeonoPlates.db.profile.nameFlags
                     end
                 },
+                classColorEnemyNames = {
+                    type = "toggle",
+                    name = "Цвет враж.игрока в цвет класса",
+                    desc = "Окршивать имена вражеских игроков в цвета их классов",
+                    order = 24,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.classColorEnemyNames = val
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.classColorEnemyNames
+                    end
+                },
+                classColorFriendlyNames = {
+                    type = "toggle",
+                    name = "Цвет союз.игрока в цвет класса",
+                    desc = "Окршивать имена союзнык игроков в цвета их классов",
+                    order = 25,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.classColorFriendlyNames = val
+                        AeonoPlates:ApplyCVars() -- применяем все CVar'ы
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.classColorFriendlyNames
+                    end
+                },
                 nameWidth = {
                     type = "range",
                     name = "Ширина имени",
@@ -134,11 +93,27 @@ local options = {
                         return AeonoPlates.db.profile.nameWidth
                     end
                 },
+                onlyNameWidth = {
+                    type = "range",
+                    name = "Ширина (только имя)",
+                    desc = "Максимальная ширина имени в режиме только-имя",
+                    order = 31,
+                    min = 20,
+                    max = 500,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.onlyNameWidth = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.onlyNameWidth
+                    end
+                },
                 nameFriendlyPlayerSize = {
                     type = "range",
                     name = "Размер (союзный игрок)",
                     desc = "Размер шрифта имени для дружественных игроков",
-                    order = 30,
+                    order = 35,
                     min = 6,
                     max = 48,
                     step = 1,
@@ -258,6 +233,20 @@ local options = {
                         return AeonoPlates.db.profile.nameOffsetY
                     end
                 },
+                onlyNameMode = {
+                    type = "select",
+                    name = "Только имя",
+                    desc = "Включить отображение только имени для выбранных фреймов",
+                    order = 110,
+                    values = onlyNameOptions,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.onlyNameMode = val;
+                        AeonoPlates:ApplyCVars()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.onlyNameMode
+                    end
+                },
                 onlyNameAnchor = {
                     type = "select",
                     name = "Привязка (только имя)",
@@ -303,22 +292,6 @@ local options = {
                     get = function(info)
                         return AeonoPlates.db.profile.onlyNameOffsetY
                     end
-                },
-                onlyNameWidth = {
-                    type = "range",
-                    name = "Ширина (только имя)",
-                    desc = "Максимальная ширина имени в режиме только-имя",
-                    order = 160,
-                    min = 20,
-                    max = 500,
-                    step = 1,
-                    set = function(info, val)
-                        AeonoPlates.db.profile.onlyNameWidth = val;
-                        AeonoPlates:RefreshAllPlates()
-                    end,
-                    get = function(info)
-                        return AeonoPlates.db.profile.onlyNameWidth
-                    end
                 }
             }
         },
@@ -331,6 +304,64 @@ local options = {
             name = "Настройки здоровья",
             order = 20,
             args = {
+                healthBarWidth = {
+                    type = "range",
+                    name = "Ширина",
+                    desc = "Ширина полос",
+                    order = 1,
+                    min = 0,
+                    max = 2,
+                    step = 0.05,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthBarWidth = val
+                        AeonoPlates:ApplyCVars() -- применяем все CVar'ы
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthBarWidth
+                    end
+                },
+                healthBarHeight = {
+                    type = "range",
+                    name = "Высота",
+                    desc = "Высота полос",
+                    order = 2,
+                    min = 0,
+                    max = 2,
+                    step = 0.05,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthBarHeight = val
+                        AeonoPlates:ApplyCVars() -- применяем все CVar'ы
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthBarHeight
+                    end
+                },
+                classColorEnemyPlates = {
+                    type = "toggle",
+                    name = "Полосы враж.игроков в цвета классов",
+                    desc = "Включает стандартную опцию игры для окраски полос вражеских игроков в цвет их класса",
+                    order = 3,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.classColorEnemyPlates = val
+                        AeonoPlates:ApplyCVars() -- применяем все CVar'ы
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.classColorEnemyPlates
+                    end
+                },
+                classColorFriendlyPlates = {
+                    type = "toggle",
+                    name = "Полосы союз.игроков в цвета классов",
+                    desc = "Включает стандартную опцию игры для окраски полос союзных игроков в цвет их класса",
+                    order = 4,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.classColorFriendlyPlates = val
+                        AeonoPlates:ApplyCVars() -- применяем все CVar'ы
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.classColorFriendlyPlates
+                    end
+                },
                 healthTexture = {
                     type = "select",
                     name = "Текстура полосы",
@@ -347,11 +378,40 @@ local options = {
                         return AeonoPlates.db.profile.healthTexture
                     end
                 },
+                healthFont = {
+                    type = "select",
+                    name = "Шрифт HP",
+                    desc = "Шрифт для текста здоровья",
+                    order = 11,
+                    values = function()
+                        return GetFontList()
+                    end,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.healthFont = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.healthFont
+                    end
+                },
+                shortenHealth = {
+                    type = "toggle",
+                    name = "Сокращать здоровье",
+                    desc = "Сокращать здоровье (1.2k, 3.5M)",
+                    order = 20,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.shortenHealth = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.shortenHealth
+                    end
+                },
                 showHealthText = {
                     type = "toggle",
                     name = "Показывать текст здоровья",
                     desc = "Показывать текст здоровья",
-                    order = 20,
+                    order = 30,
                     set = function(info, val)
                         AeonoPlates.db.profile.showHealthText = val;
                         AeonoPlates:RefreshAllPlates()
@@ -364,42 +424,13 @@ local options = {
                     type = "toggle",
                     name = "Показывать процент здоровья",
                     desc = "Показывать процент здоровья",
-                    order = 30,
+                    order = 40,
                     set = function(info, val)
                         AeonoPlates.db.profile.showHealthPercent = val;
                         AeonoPlates:RefreshAllPlates()
                     end,
                     get = function(info)
                         return AeonoPlates.db.profile.showHealthPercent
-                    end
-                },
-                shortenHealth = {
-                    type = "toggle",
-                    name = "Сокращать здоровье",
-                    desc = "Сокращать здоровье (1.2k, 3.5M)",
-                    order = 40,
-                    set = function(info, val)
-                        AeonoPlates.db.profile.shortenHealth = val;
-                        AeonoPlates:RefreshAllPlates()
-                    end,
-                    get = function(info)
-                        return AeonoPlates.db.profile.shortenHealth
-                    end
-                },
-                healthFont = {
-                    type = "select",
-                    name = "Шрифт HP",
-                    desc = "Шрифт для текста здоровья",
-                    order = 45,
-                    values = function()
-                        return GetFontList()
-                    end,
-                    set = function(info, val)
-                        AeonoPlates.db.profile.healthFont = val;
-                        AeonoPlates:RefreshAllPlates()
-                    end,
-                    get = function(info)
-                        return AeonoPlates.db.profile.healthFont
                     end
                 },
                 healthSize = {
@@ -1103,11 +1134,43 @@ local options = {
             name = "Настройки масштаба",
             order = 70,
             args = {
+                globalFrameScale = {
+                    type = "range",
+                    name = "Общий масштаб",
+                    desc = "Общий масштаб фреймов",
+                    order = 10,
+                    min = 0.5,
+                    max = 1.5,
+                    step = 0.05,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.globalFrameScale = val;
+                        AeonoPlates:ApplyCVars()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.globalFrameScale
+                    end
+                },
+                targetFrameScale = {
+                    type = "range",
+                    name = "Масштаб цели",
+                    desc = "Масштаб выбранного фрейма",
+                    order = 10,
+                    min = 1,
+                    max = 2,
+                    step = 0.05,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.targetFrameScale = val;
+                        AeonoPlates:ApplyCVars()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.targetFrameScale
+                    end
+                },
                 petFrameScale = {
                     type = "range",
                     name = "Масштаб петов",
                     desc = "Масштаб фрейма для петов",
-                    order = 10,
+                    order = 20,
                     min = 0.1,
                     max = 2.0,
                     step = 0.05,
@@ -1183,12 +1246,6 @@ local options = {
                         return AeonoPlates.db.profile.enemyNpcCastBar
                     end
                 },
-                spacer1 = {
-                    type = "description",
-                    name = "",
-                    order = 45
-                },
-
                 -- Appearance
                 castBarTex = {
                     type = "select",
@@ -1254,11 +1311,6 @@ local options = {
                         return AeonoPlates.db.profile.castBarWidth
                     end
                 },
-                spacer_icon = {
-                    type = "description",
-                    name = "",
-                    order = 76
-                },
                 castBarShowIcon = {
                     type = "toggle",
                     name = "Показывать иконку",
@@ -1289,13 +1341,6 @@ local options = {
                         return AeonoPlates.db.profile.castBarIconSide
                     end
                 },
-                spacer2 = {
-                    type = "description",
-                    name = "",
-                    order = 81
-                },
-
-                -- Position
                 castBarAnchor = {
                     type = "select",
                     name = "Привязка кастбара",
@@ -1356,13 +1401,6 @@ local options = {
                         return AeonoPlates.db.profile.castBarOffsetY
                     end
                 },
-                spacer3 = {
-                    type = "description",
-                    name = "",
-                    order = 115
-                },
-
-                -- Colors
                 castBarColor = {
                     type = "color",
                     name = "Цвет каста",
@@ -1443,13 +1481,6 @@ local options = {
                         return c[1], c[2], c[3], c[4]
                     end
                 },
-                spacer4 = {
-                    type = "description",
-                    name = "",
-                    order = 165
-                },
-
-                -- Text
                 castNameFont = {
                     type = "select",
                     name = "Шрифт названия",
@@ -1560,13 +1591,6 @@ local options = {
                         return AeonoPlates.db.profile.castNameOffsetY
                     end
                 },
-                spacer5 = {
-                    type = "description",
-                    name = "",
-                    order = 235
-                },
-
-                -- Spark
                 castBarSparkWidth = {
                     type = "range",
                     name = "Ширина спарка",

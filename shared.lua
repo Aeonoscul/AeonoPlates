@@ -1,142 +1,3 @@
---[[
-    shared.lua — AeonoPlates
-    Общие утилиты: вспомогательные функции, GetUnitData
-    Загружается перед модулями и core.lua
-]] -- Глобальные таблицы иконок (используются в GetUnitData и модулях)
-
-defaults = {
-    profile = {
-        -- ============================================
-        -- NAME SETTINGS
-        -- ============================================
-        nameFont = "Fonts\\FRIZQT__.TTF",
-        nameFlags = "OUTLINE",
-        nameWidth = 140,
-        nameFriendlyPlayerSize = 20,
-        nameEnemyPlayerSize = 16,
-        nameFriendlyNpcSize = 18,
-        nameEnemyNpcSize = 14,
-        nameAnchor = "BOTTOM",
-        nameRelAnchor = "TOP",
-        nameOffsetX = 0,
-        nameOffsetY = 2,
-        onlyNameAnchor = "CENTER",
-        onlyNameOffsetX = 0,
-        onlyNameOffsetY = 0,
-        onlyNameWidth = 120,
-
-        -- ============================================
-        -- HEALTH SETTINGS
-        -- ============================================
-        healthTexture = "Interface\\TargetingFrame\\UI-StatusBar",
-        showHealthText = true,
-        showHealthPercent = true,
-        shortenHealth = true,
-        healthFont = "Fonts\\FRIZQT__.TTF",
-        healthSize = 14,
-        healthFlags = "OUTLINE",
-        healthAnchor = "CENTER",
-        healthRelAnchor = "CENTER",
-        healthOffsetX = 0,
-        healthOffsetY = 0,
-        healthPercentSize = 12,
-        healthPercentAnchor = "RIGHT",
-        healthPercentRelAnchor = "RIGHT",
-        healthPercentOffsetX = -2,
-        healthPercentOffsetY = 0,
-
-        -- ============================================
-        -- ICON SETTINGS
-        -- ============================================
-        showEnemyClassIcons = false,
-        showFriendlyClassIcons = true,
-        showEnemyTotemIcons = true,
-        showFriendlyTotemIcons = true,
-        iconSize = 40,
-        totemIconSize = 30,
-        iconAnchor = "BOTTOM",
-        iconRelAnchor = "TOP",
-        iconOffsetX = 0,
-        iconOffsetY = 0,
-
-        -- ============================================
-        -- BORDER SETTINGS
-        -- ============================================
-        borderTexture = "Interface\\Buttons\\WHITE8X8",
-        borderPadding = 1,
-        borderThickness = 1,
-        borderTargetColor = {1, 1, 1, 1},
-        borderMouseoverColor = {0, 1, 1, 1},
-        borderCombatColor = {1, 0, 0, 1},
-        borderDefaultColor = {0, 0, 0, 1},
-
-        -- ============================================
-        -- THREAT SETTINGS
-        -- ============================================
-        threatHighColor = {0, 1, 0, 1},
-        threatLowColor = {1, 0, 0, 1},
-        threatAggroColor = {1, 1, 0, 1},
-
-        -- ============================================
-        -- CLASSIFICATION
-        -- ============================================
-        showClassification = true,
-        classificationSize = 30,
-        classificationAnchor = "RIGHT",
-        classificationRelAnchor = "LEFT",
-        classificationOffsetX = -5,
-        classificationOffsetY = 0,
-
-        -- ============================================
-        -- RAID TARGET
-        -- ============================================
-        raidTargetAnchor = "LEFT",
-        raidTargetRelAnchor = "RIGHT",
-        raidTargetScale = 1.25,
-        raidTargetOffsetX = 2,
-        raidTargetOffsetY = 0,
-
-        -- ============================================
-        -- SCALE SETTINGS
-        -- ============================================
-        petFrameScale = 0.8,
-
-        -- ============================================
-        -- CASTBAR SETTINGS
-        -- ============================================
-        friendlyPlayerCastBar = true,
-        enemyPlayerCastBar = true,
-        friendlyNpcCastBar = false,
-        enemyNpcCastBar = true,
-        castBarTex = "Interface\\TargetingFrame\\UI-StatusBar",
-        castBarFadeTime = 0.5,
-        castBarHeight = 16,
-        castBarWidth = 120,
-        castBarShowIcon = true,
-        castBarIconSide = "LEFT",
-        castBarIconOffsetX = 0,
-        castBarIconOffsetY = 0,
-        castBarAnchor = "TOP",
-        castBarRelativePoint = "BOTTOM",
-        castBarOffsetX = 0,
-        castBarOffsetY = -3,
-        castBarColor = {1, 1, 0, 1},
-        castBarSuccessColor = {0, 1, 0, 1},
-        castBarFailedColor = {1, 0, 0, 1},
-        castBarShieldColor = {0.5, 0.5, 1, 1},
-        castBarBgColor = {0, 0, 0, 0.5},
-        castNameFont = "Fonts\\FRIZQT__.TTF",
-        castNameSize = 10,
-        castNameWidth = 100,
-        castNameFlags = "OUTLINE",
-        castNameColor = {1, 1, 1, 1},
-        castNameOffsetX = 0,
-        castNameOffsetY = 0,
-        castBarSparkWidth = 20,
-        castBarSparkHeightMultiplier = 2
-    }
-}
-
 totemIcons = {
     -- Земля
     ["Тотем каменной кожи"] = {
@@ -285,6 +146,33 @@ classIcons = {
     ["EVOKER"] = "EVOKER"
 }
 
+-- Список точек привязки
+anchorOptions = {
+    TOP = "TOP",
+    BOTTOM = "BOTTOM",
+    LEFT = "LEFT",
+    RIGHT = "RIGHT",
+    CENTER = "CENTER",
+    TOPLEFT = "TOPLEFT",
+    BOTTOMLEFT = "BOTTOMLEFT",
+    TOPRIGHT = "TOPRIGHT",
+    BOTTOMRIGHT = "BOTTOMRIGHT"
+}
+
+onlyNameOptions = {
+    [0] = "Выключено",
+    [1] = "Союзники",
+    [2] = "Противники",
+    [3] = "Все",
+}
+
+-- Список флагов шрифта
+flagOptions = {
+    NONE = "None",
+    MONOCHROME = "MONOCHROME",
+    OUTLINE = "OUTLINE",
+    THICKOUTLINE = "THICKOUTLINE"
+}
 -- 3. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
 
 -- ИНИЦИАЛИЗАЦИЯ LSM — конвертация имён в пути
@@ -339,6 +227,48 @@ function InitLSM()
             db.castNameFont = path
         end
     end
+end
+
+-- Получение списка шрифтов из LSM (key = path, value = name для AceConfig select)
+function GetFontList()
+    local LSM = LibStub("LibSharedMedia-3.0", true)
+    if not LSM then
+        return {}
+    end
+    local list = LSM:HashTable("font")
+    local result = {}
+    for key, path in pairs(list) do
+        result[path] = key
+    end
+    return result
+end
+
+-- Получение списка текстур из LSM (key = path, value = name)
+function GetStatusBarList()
+    local LSM = LibStub("LibSharedMedia-3.0", true)
+    if not LSM then
+        return {}
+    end
+    local list = LSM:HashTable("statusbar")
+    local result = {}
+    for key, path in pairs(list) do
+        result[path] = key
+    end
+    return result
+end
+
+-- Получение списка бордеров из LSM (key = path, value = name)
+function GetBorderList()
+    local LSM = LibStub("LibSharedMedia-3.0", true)
+    if not LSM then
+        return {}
+    end
+    local list = LSM:HashTable("border")
+    local result = {}
+    for key, path in pairs(list) do
+        result[path] = key
+    end
+    return result
 end
 
 -- Измерялка ширины текста (один на весь аддон)
@@ -426,7 +356,7 @@ function FormatHealth(v, shorten)
 end
 
 -- Установка текста с кэшированием позиции
-function SetTextST(obj, font, size, flags, anchor, anchorFrame, relAnchor, x, y, alpha, text, color)
+function SetTextST(obj, font, size, flags, anchor, anchorFrame, relAnchor, x, y, text, color)
     if not obj then
         return
     end
@@ -455,12 +385,11 @@ function SetTextST(obj, font, size, flags, anchor, anchorFrame, relAnchor, x, y,
         obj.lastParent = anchorFrame
     end
 
-    obj:SetAlpha(alpha)
     obj:Show()
 end
 
 -- Установка иконки с кэшированием позиции
-function SetIconST(obj, path, w, h, anchor, anchorFrame, relAnchor, x, y, alpha)
+function SetIconST(obj, path, w, h, anchor, anchorFrame, relAnchor, x, y)
     if not obj then
         return
     end
@@ -479,7 +408,6 @@ function SetIconST(obj, path, w, h, anchor, anchorFrame, relAnchor, x, y, alpha)
         obj.lastParent = anchorFrame
     end
 
-    obj:SetAlpha(alpha)
     obj:Show()
 end
 
@@ -487,33 +415,30 @@ end
 local dataCache = {}
 
 -- Сбор данных о юните
-function GetUnitData(frame)
-    local unit = frame.unit or (frame.UnitFrame and frame.UnitFrame.unit)
+-- shared.lua
+function GetUnitData(unit) -- принимаем unit, а не frame
     if not unit or not UnitExists(unit) then
         return nil
     end
-
     local guid = UnitGUID(unit)
     local reaction = UnitReaction("player", unit)
     local isFriend = reaction and reaction > 4
     if UnitIsUnit("player", unit) then
         isFriend = true
     end
-    local unitName = frame and UnitName(unit) or ""
+    local unitName = UnitName(unit) or ""
     local cvar = tonumber(GetCVar("nameplateShowOnlyNames")) or 0
     local isPlayer = UnitIsPlayer(unit)
     local cleanName = unitName:gsub("%s+[IVXLCDM]+%s*$", "")
     local isPet = UnitIsPetByGUID(guid)
-    local alpha = frame:GetAlpha()
-
+    local isElite = (UnitClassification(unit) ~= "normal")
     local totemData = not isPlayer and totemIcons[cleanName]
     local isTotemIcon = totemData and totemData.status
+    local class = select(2, UnitClass(unit))
 
-    -- Переиспользуем таблицу
     local data = dataCache
     data.unit = unit
     data.guid = guid
-    data.alpha = alpha
     data.isPlayer = isPlayer
     data.isFriend = isFriend
     data.unitName = unitName
@@ -522,6 +447,8 @@ function GetUnitData(frame)
     data.totemData = totemData
     data.isTotemIcon = isTotemIcon
     data.isPet = isPet
+    data.isElite = isElite
+    data.class = class
     return data
 end
 

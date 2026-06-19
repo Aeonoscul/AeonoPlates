@@ -53,7 +53,8 @@ function UpdateCustomBorder(frame, data, db)
 
     UpdateBorderGeometry(frame, db)
 
-    if data.isTotemIcon or data.isOnlyNameMode then
+    if data.isOnlyNameMode or (data.isTotemIcon and not data.isFriend and db.showEnemyTotemIcons) or
+        (data.isTotemIcon and data.isFriend and db.showFriendlyTotemIcons) then
         frame.customBorder:Hide()
         return
     end

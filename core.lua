@@ -1,10 +1,21 @@
---[[
-    core.lua — AeonoPlates
-    Ядро аддона: AceAddon-3.0, события, хуки, OnUpdate-поллинг, UpdateStyle
-]] local MAJOR, MINOR = "AeonoPlates", 1
+local MAJOR, MINOR = "AeonoPlates", 1
 
 -- Регистрация аддона (глобал для доступа из options.lua и других файлов)
 AeonoPlates = LibStub("AceAddon-3.0"):NewAddon("AeonoPlates", "AceEvent-3.0", "AceHook-3.0", "AceConsole-3.0")
+
+function AeonoPlates:ApplyCVars()
+    local db = self.db.profile
+    SetCVar("ShowNameClassColorInFriendlyNameplate", db.classColorFriendlyNames and 1 or 0,
+        "ShowNameClassColorInFriendlyNameplate")
+    SetCVar("ShowClassColorInNameplate", db.classColorEnemyPlates and 1 or 0, "ShowClassColorInNameplate")
+    SetCVar("ShowClassColorInFriendlyNameplate", db.classColorFriendlyPlates and 1 or 0,
+        "ShowClassColorInFriendlyNameplate")
+    SetCVar("NamePlateHorizontalScale", db.healthBarWidth, "NamePlateHorizontalScale")
+    SetCVar("NamePlateVerticalScale", db.healthBarHeight, "NamePlateVerticalScale")
+    SetCVar("nameplateGlobalScale", db.globalFrameScale, "nameplateGlobalScale")
+    SetCVar("nameplateSelectedScale", db.targetFrameScale, "nameplateSelectedScale")
+    SetCVar("nameplateShowOnlyNames", db.onlyNameMode, "nameplateShowOnlyNames")
+end
 
 -- ============================================
 -- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ХУКОВ
@@ -134,20 +145,17 @@ end
 -- ============================================
 -- UPDATE STYLE — ГЛАВНАЯ ФУНКЦИЯ СТИЛИЗАЦИИ
 -- ============================================
-function AeonoPlates:UpdateStyle(frame)
+function AeonoPlates:UpdateStyle(frame, unit)
     local db = self.db.profile
-
-    local unit = frame.unit or (frame.UnitFrame and frame.UnitFrame.unit)
     if not unit or not UnitExists(unit) then
         return
     end
 
-    -- Player self — особая обработка
+    -- Player self
     if UpdatePlayerSelf(frame) then
         return
     end
 
-    -- Только неймплейты
     if not unit:find("nameplate") then
         return
     end
@@ -155,7 +163,7 @@ function AeonoPlates:UpdateStyle(frame)
         return
     end
 
-    local data = GetUnitData(frame)
+    local data = GetUnitData(unit) -- теперь передаём unit
     if not data then
         return
     end
@@ -175,25 +183,15 @@ function AeonoPlates:UpdateStyle(frame)
     UpdateNameText(frame, data, db)
     UpdateHealthValueText(frame, data, db)
     UpdateHealthPercText(frame, data, db)
-    if db.showHealthText or db.showHealthPercent then
-        self:UpdateHealthValues(frame, data.unit, db)
-    end
+    UpdateHealthValues(frame, data.unit, db)
     UpdateUnitIcon(frame, data, db)
     UpdateClassification(frame, data, db)
     UpdateRaidTarget(frame, data, db)
     UpdateFrameScale(frame, data, db)
     UpdateFrameLevel(frame, data)
     UpdateCustomBorder(frame, data, db)
-    UpdateThreatIndicator(frame, data, db)
+    UpdateHealthBarColor(frame, data, db)
     CreatePureCastBar(frame, db)
-end
-
--- ============================================
--- ОБНОВЛЕНИЕ ЗДОРОВЬЯ (для UNIT_COMBAT)
--- ============================================
-function AeonoPlates:UpdateHealthValues(frame, unit)
-    local db = self.db.profile
-    UpdateHealthValues(frame, unit, db)
 end
 
 -- ============================================
@@ -206,8 +204,8 @@ function AeonoPlates:RefreshAllPlates()
         local u = frame.unit or (frame.UnitFrame and frame.UnitFrame.unit)
         if u then
             local targetFrame = frame.UnitFrame or frame
-            self:UpdateStyle(targetFrame)
-            self:UpdateHealthValues(targetFrame, u)
+            self:UpdateStyle(targetFrame, u)
+            UpdateHealthValues(targetFrame, u, self.db.profile)
         end
     end
 end
@@ -220,8 +218,8 @@ function AeonoPlates:OnNamePlateAdded(event, unit)
         local frame = C_NamePlate.GetNamePlateForUnit(unit)
         if frame then
             local targetFrame = frame.UnitFrame or frame
-            self:UpdateStyle(targetFrame)
-            self:UpdateHealthValues(targetFrame, unit)
+            self:UpdateStyle(targetFrame, unit)
+            UpdateHealthValues(targetFrame, unit, self.db.profile)
             -- Проверяем, не кастует ли юнит уже сейчас
             if UnitCastingInfo(unit) then
                 UpdateCastBarState(unit, true, false, self.db.profile)
@@ -244,7 +242,7 @@ function AeonoPlates:OnUnitCombat(event, unit, action)
                 local frame = C_NamePlate.GetNamePlateForUnit(unit)
                 if frame then
                     local targetFrame = frame.UnitFrame or frame
-                    self:UpdateHealthValues(targetFrame, unit)
+                    UpdateHealthValues(targetFrame, unit, self.db.profile)
                 end
             end
         end
@@ -256,8 +254,8 @@ function AeonoPlates:OnUnitFaction(event, unit)
         local frame = C_NamePlate.GetNamePlateForUnit(unit)
         if frame then
             local targetFrame = frame.UnitFrame or frame
-            self:UpdateStyle(targetFrame)
-            self:UpdateHealthValues(targetFrame, unit)
+            self:UpdateStyle(targetFrame, unit)
+            UpdateHealthValues(targetFrame, unit, self.db.profile)
         end
     end
 end
@@ -267,9 +265,9 @@ function AeonoPlates:OnThreatUpdate(event, unit)
         local frame = C_NamePlate.GetNamePlateForUnit(unit)
         if frame then
             local targetFrame = frame.UnitFrame or frame
-            local data = GetUnitData(targetFrame)
+            local data = GetUnitData(unit)
             if data then
-                UpdateThreatIndicator(targetFrame, data, self.db.profile)
+                UpdateHealthBarColor(targetFrame, data, self.db.profile)
             end
         end
     end
@@ -277,7 +275,7 @@ end
 
 function AeonoPlates:OnTargetChanged()
     if _prevTargetFrame then
-        local data = GetUnitData(_prevTargetFrame)
+        local data = GetUnitData(_prevTargetFrame.unit)
         if data then
             UpdateFrameLevel(_prevTargetFrame, data)
             UpdateCustomBorder(_prevTargetFrame, data, self.db.profile)
@@ -290,7 +288,7 @@ function AeonoPlates:OnTargetChanged()
         local targetFrame = newTargetFrame.UnitFrame or newTargetFrame
         local unit = targetFrame.unit
         if unit and unit:find("nameplate") then
-            local data = GetUnitData(targetFrame)
+            local data = GetUnitData(unit)
             if data then
                 UpdateFrameLevel(targetFrame, data)
                 UpdateCustomBorder(targetFrame, data, self.db.profile)
@@ -301,7 +299,7 @@ end
 
 function AeonoPlates:OnMouseoverChanged()
     if _prevMouseoverFrame then
-        local data = GetUnitData(_prevMouseoverFrame)
+        local data = GetUnitData(_prevMouseoverFrame.unit)
         if data then
             UpdateFrameLevel(_prevMouseoverFrame, data)
             UpdateCustomBorder(_prevMouseoverFrame, data, self.db.profile)
@@ -314,7 +312,7 @@ function AeonoPlates:OnMouseoverChanged()
         local targetFrame = newMouseoverFrame.UnitFrame or newMouseoverFrame
         local unit = targetFrame.unit
         if unit and unit:find("nameplate") then
-            local data = GetUnitData(targetFrame)
+            local data = GetUnitData(unit)
             if data then
                 UpdateFrameLevel(targetFrame, data)
                 UpdateCustomBorder(targetFrame, data, self.db.profile)
@@ -328,10 +326,21 @@ function AeonoPlates:OnUnitFlags(event, unit)
         local frame = C_NamePlate.GetNamePlateForUnit(unit)
         if frame then
             local targetFrame = frame.UnitFrame or frame
-            local data = GetUnitData(targetFrame)
+            local data = GetUnitData(unit)
             if data then
-                UpdateThreatIndicator(targetFrame, data, self.db.profile)
+                UpdateHealthBarColor(targetFrame, data, self.db.profile)
             end
+        end
+    end
+end
+
+function AeonoPlates:OnUnitNameUpdate(event, unit)
+    if unit and unit:find("nameplate") then
+        local frame = C_NamePlate.GetNamePlateForUnit(unit)
+        if frame then
+            local targetFrame = frame.UnitFrame or frame
+            self:UpdateStyle(targetFrame, unit)
+            UpdateHealthValues(targetFrame, unit, self.db.profile)
         end
     end
 end
@@ -383,9 +392,32 @@ end
 -- ============================================
 -- ЖИЗНЕННЫЙ ЦИКЛ
 -- ============================================
+function AeonoPlates:RegisterStandardProfiles()
+    if not standardProfiles then
+        return
+    end
+    local base = defaults.profile
+    local profiles = self.db.profiles -- таблица профилей
+
+    for name, overrides in pairs(standardProfiles) do
+        if not profiles[name] then
+            -- Создаём копию базовых настроек
+            local data = {}
+            for k, v in pairs(base) do
+                data[k] = v
+            end
+            for k, v in pairs(overrides) do
+                data[k] = v
+            end
+            profiles[name] = data
+        end
+    end
+end
+
 function AeonoPlates:OnInitialize()
     -- Инициализация БД
     self.db = LibStub("AceDB-3.0"):New("AeonoPlatesDB", defaults, "Default")
+    self:RegisterStandardProfiles()
 
     -- Регистрация слаш-команд
     self:RegisterChatCommand("aep", "OpenOptions")
@@ -408,6 +440,7 @@ function AeonoPlates:OnProfileChanged(event, database, newProfileKey)
     ClearActiveCastBars()
     RefreshBorderColorCache(self.db.profile)
     RefreshCastBarColorCache(self.db.profile)
+    self:ApplyCVars()
     self:RefreshAllPlates()
 end
 
@@ -439,6 +472,7 @@ function AeonoPlates:OnEnable()
     self:RegisterEvent("CVAR_UPDATE", "OnCVarUpdate")
     self:RegisterEvent("PLAYER_DUEL_START", "OnDuelEvent")
     self:RegisterEvent("PLAYER_DUEL_FINISHED", "OnDuelEvent")
+    self:RegisterEvent("UNIT_NAME_UPDATE", "OnUnitNameUpdate")
 
     self:RegisterEvent("UNIT_SPELLCAST_START", "OnUnitSpellcastStart")
     self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "OnUnitSpellcastChannelStart")
@@ -489,7 +523,7 @@ function AeonoPlates:OnEnable()
                 local unit = _prevMouseoverFrame.unit or
                                  (_prevMouseoverFrame.UnitFrame and _prevMouseoverFrame.UnitFrame.unit)
                 if not unit or not UnitIsUnit(unit, "mouseover") then
-                    local data = GetUnitData(_prevMouseoverFrame)
+                    local data = GetUnitData(unit)
                     if data then
                         UpdateFrameLevel(_prevMouseoverFrame, data)
                         UpdateCustomBorder(_prevMouseoverFrame, data, AeonoPlates.db.profile)
@@ -501,7 +535,7 @@ function AeonoPlates:OnEnable()
             if _prevTargetFrame then
                 local unit = _prevTargetFrame.unit or (_prevTargetFrame.UnitFrame and _prevTargetFrame.UnitFrame.unit)
                 if not unit or not UnitIsUnit(unit, "target") then
-                    local data = GetUnitData(_prevTargetFrame)
+                    local data = GetUnitData(unit)
                     if data then
                         UpdateFrameLevel(_prevTargetFrame, data)
                         UpdateCustomBorder(_prevTargetFrame, data, AeonoPlates.db.profile)
@@ -516,7 +550,7 @@ function AeonoPlates:OnEnable()
                 local targetFrame = plate.UnitFrame or plate
                 local unit = targetFrame.unit
                 if unit and unit:find("nameplate") and UnitExists(unit) then
-                    local data = GetUnitData(targetFrame)
+                    local data = GetUnitData(unit)
                     if data then
                         UpdateCustomBorder(targetFrame, data, AeonoPlates.db.profile)
                     end
@@ -527,10 +561,8 @@ function AeonoPlates:OnEnable()
         self._PollFrame = pollFrame
     end
 
-    -- ВОТ ЗДЕСЬ ЗАМЕНА: создаём динамический OnUpdate-фрейм для кастбара
     CreateCastBarUpdateFrame()
-
-    -- Полный рефреш при старте
+    self:ApplyCVars()
     self:RefreshAllPlates()
 end
 

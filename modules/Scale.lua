@@ -1,7 +1,4 @@
---[[
-    modules/Scale.lua — AeonoPlates
-    Масштаб фреймов (петы)
-]] function UpdateFrameScale(frame, data, db)
+function UpdateFrameScale(frame, data, db)
     if not frame.unit or UnitIsUnit(frame.unit, "player") then
         return
     end

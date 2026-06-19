@@ -1,9 +1,6 @@
---[[
-    modules/Name.lua — AeonoPlates
-    Настройки имени: кастомное имя, скрытие оригинального
-]] -- Обновление кастомного имени
 function UpdateNameText(frame, data, db)
-    if data.isTotemIcon then
+    if (data.isTotemIcon and not data.isFriend and db.showEnemyTotemIcons) or
+        (data.isTotemIcon and data.isFriend and db.showFriendlyTotemIcons) then
         if frame.customName then
             frame.customName:Hide()
         end
@@ -40,16 +37,18 @@ function UpdateNameText(frame, data, db)
     local y = data.isOnlyNameMode and db.onlyNameOffsetY or db.nameOffsetY
 
     local r, g, b, a
-    if frame.name then
-        r, g, b, a = frame.name:GetTextColor()
+    if db.classColorEnemyNames and data.isPlayer and not data.isFriend and data.class then
+        local color = RAID_CLASS_COLORS[data.class]
+        if color then
+            r, g, b, a = color.r, color.g, color.b, 1
+        end
     else
-        r, g, b, a = 1, 1, 1, 1
-    end
-    if not data.isOnlyNameMode then
-        r, g, b = 1, 1, 1
+        -- Если классовый цвет не применяется, берём цвет из стандартного frame.name (если есть)
+        if frame.name then
+            r, g, b, a = frame.name:GetTextColor()
+        end
     end
 
-    SetTextST(frame.customName, db.nameFont, size, db.nameFlags, anchor, parent, rel, x, y, data.alpha, finalName,
-        {r, g, b, a})
+    SetTextST(frame.customName, db.nameFont, size, db.nameFlags, anchor, parent, rel, x, y, finalName, {r, g, b, a})
     frame.customName:Show()
 end

@@ -1,13 +1,10 @@
---[[
-    modules/Health.lua — AeonoPlates
-    Настройки здоровья: текстура бара, текст HP, процент HP
-]] -- Обновление текстуры статус-бара
 function UpdateHealthBarTexture(frame, data, db)
     if not frame.healthBar then
         return
     end
 
-    if data.isTotemIcon or data.isOnlyNameMode then
+    if data.isOnlyNameMode or (data.isTotemIcon and not data.isFriend and db.showEnemyTotemIcons) or
+        (data.isTotemIcon and data.isFriend and db.showFriendlyTotemIcons) then
         frame.healthBar:SetAlpha(0)
     else
         frame.healthBar:SetAlpha(1)
@@ -31,7 +28,8 @@ end
 
 -- Обновление текста здоровья
 function UpdateHealthValueText(frame, data, db)
-    if not frame.healthBar or data.isOnlyNameMode or data.isTotemIcon then
+    if not frame.healthBar or data.isOnlyNameMode or (data.isTotemIcon and not data.isFriend and db.showEnemyTotemIcons) or
+        (data.isTotemIcon and data.isFriend and db.showFriendlyTotemIcons) then
         if frame.healthText then
             frame.healthText:Hide()
         end
@@ -52,12 +50,13 @@ function UpdateHealthValueText(frame, data, db)
     end
 
     SetTextST(frame.healthText, db.healthFont, db.healthSize, db.healthFlags, db.healthAnchor, parent,
-        db.healthRelAnchor, db.healthOffsetX, db.healthOffsetY, data.alpha)
+        db.healthRelAnchor, db.healthOffsetX, db.healthOffsetY)
 end
 
 -- Обновление процента здоровья
 function UpdateHealthPercText(frame, data, db)
-    if not frame.healthBar or data.isOnlyNameMode or data.isTotemIcon then
+    if not frame.healthBar or data.isOnlyNameMode or (data.isTotemIcon and not data.isFriend and db.showEnemyTotemIcons) or
+        (data.isTotemIcon and data.isFriend and db.showFriendlyTotemIcons) then
         if frame.percText then
             frame.percText:Hide()
         end
@@ -79,7 +78,7 @@ function UpdateHealthPercText(frame, data, db)
     end
 
     SetTextST(frame.percText, db.healthFont, db.healthPercentSize, db.healthFlags, db.healthPercentAnchor, parent,
-        db.healthPercentRelAnchor, db.healthPercentOffsetX, db.healthPercentOffsetY, data.alpha)
+        db.healthPercentRelAnchor, db.healthPercentOffsetX, db.healthPercentOffsetY)
 end
 
 -- Обновление значений здоровья (вызывается из UNIT_COMBAT и UpdateStyle)
@@ -88,27 +87,33 @@ function UpdateHealthValues(frame, unit, db)
         return
     end
 
-    if not db.showHealthText and not db.showHealthPercent then
-        return
-    end
-
     local hp, max = UnitHealth(unit), UnitHealthMax(unit)
 
+    -- Обработка текста здоровья
     if db.showHealthText then
         local str = FormatHealth(hp, db.shortenHealth)
         if frame.healthText then
             frame.healthText:SetText(str)
+            frame.healthText:Show()
         end
-    elseif frame.healthText then
-        frame.healthText:SetText("")
+    else
+        if frame.healthText then
+            frame.healthText:SetText("")
+            frame.healthText:Hide()
+        end
     end
 
+    -- Обработка процента здоровья
     if db.showHealthPercent and max > 0 then
         local pct = string.format("%d%%", math.floor((hp / max) * 100))
         if frame.percText then
             frame.percText:SetText(pct)
+            frame.percText:Show()
         end
-    elseif frame.percText then
-        frame.percText:SetText("")
+    else
+        if frame.percText then
+            frame.percText:SetText("")
+            frame.percText:Hide()
+        end
     end
 end

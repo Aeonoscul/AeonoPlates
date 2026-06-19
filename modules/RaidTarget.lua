@@ -1,7 +1,4 @@
---[[
-    modules/RaidTarget.lua — AeonoPlates
-    Рейдовая метка: позиционирование и масштаб
-]] function UpdateRaidTarget(frame, data, db)
+function UpdateRaidTarget(frame, data, db)
     if not frame.RaidTargetFrame then
         return
     end
@@ -27,5 +24,4 @@
     end
 
     rtf:SetScale(db.raidTargetScale)
-    rtf:SetAlpha(data.alpha)
 end

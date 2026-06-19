@@ -1,10 +1,4 @@
---[[
-    modules/Threat.lua — AeonoPlates
-    Индикация угрозы (триты) через цвет полосы здоровья.
-    Использует родной healthBar:SetStatusBarColor().
-    Сохраняет оригинальный цвет бара для восстановления.
-    Не применяется к игрокам, тотемам и режиму только-имя.
-]] function UpdateThreatIndicator(frame, data, db)
+function UpdateHealthBarColor(frame, data, db)
     if not frame.healthBar then
         return
     end

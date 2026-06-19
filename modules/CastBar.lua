@@ -115,20 +115,8 @@ function UpdateCastBarSettings(cb, db)
     end
 
     if cb.text then
-        SetTextST(
-            cb.text,
-            db.castNameFont,
-            db.castNameSize,
-            db.castNameFlags,
-            "CENTER",
-            cb,
-            "CENTER",
-            db.castNameOffsetX,
-            db.castNameOffsetY,
-            1,
-            cb.text:GetText(),
-            _cachedCastBarColors.nameColor
-        )
+        SetTextST(cb.text, db.castNameFont, db.castNameSize, db.castNameFlags, "CENTER", cb, "CENTER",
+            db.castNameOffsetX, db.castNameOffsetY, cb.text:GetText(), _cachedCastBarColors.nameColor)
     end
 
     if cb.spark then
