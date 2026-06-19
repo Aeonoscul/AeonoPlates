@@ -2,7 +2,7 @@
 ## Title: AeonoPlates
 ## Notes: Кастомизация неймплейтов с поддержкой Legion/DF бекпорта
 ## Author: Aeonoscul
-## Version: 1.0.5
+## Version: 1.0.6
 ## LoadOn: PLAYER_LOGIN
 ## SavedVariables: AeonoPlatesDB
 ## X-Sirus-Update: https://github.com/Aeonoscul/AeonoPlates/tree/main
