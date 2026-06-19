@@ -1,7 +1,3 @@
---[[
-    options.lua — AeonoPlates
-    Интерфейс настроек на AceConfig-3.0
-]] -- Получаем ссылку на аддон (глобал, установленный в core.lua)
 AeonoPlates = LibStub("AceAddon-3.0"):GetAddon("AeonoPlates")
 
 -- ============================================
@@ -885,12 +881,12 @@ local options = {
         -- ============================================
         threatSettings = {
             type = "group",
-            name = "Настройки угрозы",
+            name = "Настройки цвета",
             order = 45,
             args = {
                 threatHighColor = {
                     type = "color",
-                    name = "Цвет (высокая угроза)",
+                    name = "Цвет здоровья (высокая угроза)",
                     desc = "Цвет полосы здоровья при высоком уровне угрозы (танкуем)",
                     order = 10,
                     hasAlpha = true,
@@ -906,7 +902,7 @@ local options = {
                 },
                 threatLowColor = {
                     type = "color",
-                    name = "Цвет (низкая угроза)",
+                    name = "Цвет здоровья (низкая угроза)",
                     desc = "Цвет полосы здоровья при низком уровне угрозы (не в агро-листе)",
                     order = 20,
                     hasAlpha = true,
@@ -922,7 +918,7 @@ local options = {
                 },
                 threatAggroColor = {
                     type = "color",
-                    name = "Цвет (потеря агро)",
+                    name = "Цвет здоровья (потеря агро)",
                     desc = "Цвет полосы здоровья при потере агро (threat 1-2)",
                     order = 30,
                     hasAlpha = true,

@@ -1,6 +1,7 @@
 local MAJOR, MINOR = "AeonoPlates", 1
-
--- Регистрация аддона (глобал для доступа из options.lua и других файлов)
+local LibDeflate = LibStub("LibDeflate", true)
+local AceSerializer = LibStub("AceSerializer-3.0", true)
+local AceGUI = LibStub("AceGUI-3.0", true)
 AeonoPlates = LibStub("AceAddon-3.0"):NewAddon("AeonoPlates", "AceEvent-3.0", "AceHook-3.0", "AceConsole-3.0")
 
 function AeonoPlates:ApplyCVars()
@@ -210,6 +211,119 @@ function AeonoPlates:RefreshAllPlates()
     end
 end
 
+-- ============================================
+-- ЭКСПОРТ / ИМПОРТ ПРОФИЛЕЙ
+-- ============================================
+function AeonoPlates:ExportProfile()
+    if not LibDeflate or not AceSerializer then
+        self:Print("Ошибка: библиотеки сжатия не загружены.")
+        return
+    end
+    local data = self.db.profile
+    local serialized = AceSerializer:Serialize(data)
+    local compressed = LibDeflate:CompressDeflate(serialized)
+    local encoded = LibDeflate:EncodeForPrint(compressed)
+    local exportStr = "!AEP:1!" .. encoded
+    self:ShowExportFrame(exportStr)
+end
+
+function AeonoPlates:ImportProfile(encodedStr)
+    if not LibDeflate or not AceSerializer then
+        self:Print("Ошибка: библиотеки сжатия не загружены.")
+        return false
+    end
+    if not encodedStr or encodedStr:sub(1, 7) ~= "!AEP:1!" then
+        self:Print("Неверный формат: отсутствует заголовок !AEP:1!")
+        return false
+    end
+    local dataStr = encodedStr:sub(8)
+    local decoded = LibDeflate:DecodeForPrint(dataStr)
+    if not decoded then
+        self:Print("Ошибка декодирования (возможно, повреждена строка).")
+        return false
+    end
+    local decompressed = LibDeflate:DecompressDeflate(decoded)
+    if not decompressed then
+        self:Print("Ошибка распаковки данных.")
+        return false
+    end
+    local success, data = AceSerializer:Deserialize(decompressed)
+    if not success then
+        self:Print("Ошибка десериализации профиля.")
+        return false
+    end
+    -- Заменяем текущий профиль
+    local profile = self.db.profile
+    for k in pairs(profile) do
+        profile[k] = nil
+    end
+    for k, v in pairs(data) do
+        profile[k] = v
+    end
+    -- Применяем все изменения как при смене профиля (аналог OnProfileChanged)
+    ClearActiveCastBars()
+    RefreshBorderColorCache(self.db.profile)
+    RefreshCastBarColorCache(self.db.profile)
+    self:ApplyCVars()
+    self:RefreshAllPlates()
+    self:Print("Профиль успешно импортирован.")
+    return true
+end
+
+-- ============================================
+-- GUI-ОКНА ДЛЯ ЭКСПОРТА/ИМПОРТА
+-- ============================================
+function AeonoPlates:ShowExportFrame(exportStr)
+    local frame = AceGUI:Create("Frame")
+    frame:SetTitle("Экспорт профиля")
+    frame:SetWidth(600)
+    frame:SetHeight(400)
+    frame:SetLayout("Flow")
+    frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
+
+    local editBox = AceGUI:Create("MultiLineEditBox")
+    editBox:SetLabel("Скопируйте строку ниже:")
+    editBox:SetText(exportStr)
+    editBox:SetNumLines(15)
+    editBox:SetFullWidth(true)
+    editBox:SetHeight(300)
+
+    editBox.editBox:EnableMouse(true)
+    editBox.editBox:HighlightText()
+    editBox.editBox:SetFocus()
+
+    editBox.button:Hide()
+    
+    frame:AddChild(editBox)
+
+    -- Нет дополнительных кнопок, только крестик в заголовке
+    frame:Show()
+end
+
+function AeonoPlates:ShowImportFrame()
+    local frame = AceGUI:Create("Frame")
+    frame:SetTitle("Импорт профиля")
+    frame:SetWidth(600)
+    frame:SetHeight(400)
+    frame:SetLayout("Flow")
+    frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
+
+    local editBox = AceGUI:Create("MultiLineEditBox")
+    editBox:SetLabel("Вставьте строку для импорта:")
+    editBox:SetNumLines(15)
+    editBox:SetFullWidth(true)
+    editBox:SetHeight(300)
+    -- Переопределяем её действие
+    editBox.button:SetScript("OnClick", function()
+        local text = editBox:GetText()
+        if AeonoPlates:ImportProfile(text) then
+            AceGUI:Release(frame)
+        end
+    end)
+    editBox.button:Show()
+    frame:AddChild(editBox)
+    frame:Show()
+end
 -- ============================================
 -- ОБРАБОТЧИКИ СОБЫТИЙ
 -- ============================================
@@ -456,7 +570,38 @@ function AeonoPlates:OnEnable()
 
         local AceDBOptions = LibStub("AceDBOptions-3.0", true)
         if AceDBOptions then
-            options.args.profile = AceDBOptions:GetOptionsTable(self.db)
+            local standardProfile = AceDBOptions:GetOptionsTable(self.db)
+            local profileGroup = {
+                type = "group",
+                name = standardProfile.name,
+                desc = standardProfile.desc,
+                handler = standardProfile.handler,
+                args = {}
+            }
+            -- Копируем стандартные аргументы
+            for k, v in pairs(standardProfile.args) do
+                profileGroup.args[k] = v
+            end
+            -- Добавляем кнопки экспорта и импорта (порядок 100 и 110, чтобы были внизу)
+            profileGroup.args.export = {
+                type = "execute",
+                name = "Экспорт профиля",
+                desc = "Скопировать текущий профиль в виде строки.",
+                order = 100,
+                func = function()
+                    AeonoPlates:ExportProfile()
+                end
+            }
+            profileGroup.args.import = {
+                type = "execute",
+                name = "Импорт профиля",
+                desc = "Вставить сохранённую строку профиля.",
+                order = 110,
+                func = function()
+                    AeonoPlates:ShowImportFrame()
+                end
+            }
+            options.args.profile = profileGroup
         end
     end
 

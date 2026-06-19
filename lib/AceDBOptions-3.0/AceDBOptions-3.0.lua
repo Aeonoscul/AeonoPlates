@@ -35,9 +35,7 @@ local L = {
 	new_sub = "Create a new empty profile.",
 	choose = "Existing Profiles",
 	choose_sub = "Select one of your currently available profiles.",
-	copy_desc = "Copy the settings from one existing profile into the currently active profile.",
 	copy = "Copy From",
-	delete_desc = "Delete existing and unused profiles from the database to save space, and cleanup the SavedVariables file.",
 	delete = "Delete a Profile",
 	delete_sub = "Deletes a profile from the database.",
 	delete_confirm = "Are you sure you want to delete the selected profile?",
@@ -58,9 +56,7 @@ if LOCALE == "deDE" then
 	L["new_sub"] = "Ein neues Profil erstellen."
 	L["choose"] = "Vorhandene Profile"
 	L["choose_sub"] = "W\195\164hlt ein bereits vorhandenes Profil aus."
-	L["copy_desc"] = "Kopiere die Einstellungen von einem vorhandenen Profil in das aktive Profil."
 	L["copy"] = "Kopieren von..."
-	L["delete_desc"] = "L\195\182sche vorhandene oder unbenutzte Profile aus der Datenbank um Platz zu sparen und um die SavedVariables Datei 'sauber' zu halten."
 	L["delete"] = "Profil l\195\182schen"
 	L["delete_sub"] = "L\195\182scht ein Profil aus der Datenbank."
 	L["delete_confirm"] = "Willst du das ausgew\195\164hlte Profil wirklich l\195\182schen?"
@@ -78,9 +74,7 @@ elseif LOCALE == "frFR" then
 	L["new_sub"] = "Cr\195\169\195\169e un nouveau profil vierge."
 	L["choose"] = "Profils existants"
 	L["choose_sub"] = "Permet de choisir un des profils d\195\169j\195\160 disponibles."
-	L["copy_desc"] = "Copie les param\195\168tres d'un profil d\195\169j\195\160 existant dans le profil actuellement actif."
 	L["copy"] = "Copier \195\160 partir de"
-	L["delete_desc"] = "Supprime les profils existants inutilis\195\169s de la base de donn\195\169es afin de gagner de la place et de nettoyer le fichier SavedVariables."
 	L["delete"] = "Supprimer un profil"
 	L["delete_sub"] = "Supprime un profil de la base de donn\195\169es."
 	L["delete_confirm"] = "Etes-vous s\195\187r de vouloir supprimer le profil s\195\169lectionn\195\169 ?"
@@ -98,9 +92,7 @@ elseif LOCALE == "koKR" then
 	L["new_sub"] = "새로운 프로필을 만듭니다."
 	L["choose"] = "프로필 선택"
 	L["choose_sub"] = "당신이 현재 이용할수 있는 프로필을 선택합니다."
-	L["copy_desc"] = "현재 사용중인 프로필에, 선택한 프로필의 설정을 복사합니다."
 	L["copy"] = "복사"
-	L["delete_desc"] = "데이터베이스에 사용중이거나 저장된 프로파일 삭제로 SavedVariables 파일의 정리와 공간 절약이 됩니다."
 	L["delete"] = "프로필 삭제"
 	L["delete_sub"] = "데이터베이스의 프로필을 삭제합니다."
 	L["delete_confirm"] = "정말로 선택한 프로필의 삭제를 원하십니까?"
@@ -118,9 +110,7 @@ elseif LOCALE == "esES" or LOCALE == "esMX" then
 	L["new_sub"] = "Crear un nuevo perfil vacio."
 	L["choose"] = "Perfiles existentes"
 	L["choose_sub"] = "Selecciona uno de los perfiles disponibles."
-	L["copy_desc"] = "Copia los ajustes de un perfil existente al perfil actual."
 	L["copy"] = "Copiar de"
-	L["delete_desc"] = "Borra los perfiles existentes y sin uso de la base de datos para ganar espacio y limpiar el archivo SavedVariables."
 	L["delete"] = "Borrar un Perfil"
 	L["delete_sub"] = "Borra un perfil de la base de datos."
 	L["delete_confirm"] = "¿Estas seguro que quieres borrar el perfil seleccionado?"
@@ -138,9 +128,7 @@ elseif LOCALE == "zhTW" then
 	L["new_sub"] = "新建一個空的設定檔。"
 	L["choose"] = "現有的設定檔"
 	L["choose_sub"] = "從當前可用的設定檔裏面選擇一個。"
-	L["copy_desc"] = "從當前某個已保存的設定檔複製到當前正使用的設定檔。"
 	L["copy"] = "複製自"
-	L["delete_desc"] = "從資料庫裏刪除不再使用的設定檔，以節省空間，並且清理SavedVariables檔。"
 	L["delete"] = "刪除一個設定檔"
 	L["delete_sub"] = "從資料庫裏刪除一個設定檔。"
 	L["delete_confirm"] = "你確定要刪除所選擇的設定檔嗎？"
@@ -158,9 +146,7 @@ elseif LOCALE == "zhCN" then
 	L["new_sub"] = "新建一个空的配置文件。"
 	L["choose"] = "现有的配置文件"
 	L["choose_sub"] = "从当前可用的配置文件里面选择一个。"
-	L["copy_desc"] = "从当前某个已保存的配置文件复制到当前正使用的配置文件。"
 	L["copy"] = "复制自"
-	L["delete_desc"] = "从数据库里删除不再使用的配置文件，以节省空间，并且清理SavedVariables文件。"
 	L["delete"] = "删除一个配置文件"
 	L["delete_sub"] = "从数据库里删除一个配置文件。"
 	L["delete_confirm"] = "你确定要删除所选择的配置文件么？"
@@ -178,9 +164,7 @@ elseif LOCALE == "ruRU" then
 	L["new_sub"] = "Создать новый чистый профиль"
 	L["choose"] = "Существующие профили"
 	L["choose_sub"] = "Выбор одиного из уже доступных профилей"
-	L["copy_desc"] = "Скопировать настройки из выбранного профиля в активный."
 	L["copy"] = "Скопировать из"
-	L["delete_desc"] = "Удалить существующий и неиспользуемый профиль из БД для сохранения места, и очистить SavedVariables файл."
 	L["delete"] = "Удалить профиль"
 	L["delete_sub"] = "Удаление профиля из БД"
 	L["delete_confirm"] = "Вы уверены, что вы хотите удалить выбранный профиль?"
@@ -357,11 +341,6 @@ local optionsTable = {
 		values = "ListProfiles",
 		arg = "common",
 	},
-	copydesc = {
-		order = 50,
-		type = "description",
-		name = "\n" .. L["copy_desc"],
-	},
 	copyfrom = {
 		order = 60,
 		type = "select",
@@ -373,13 +352,8 @@ local optionsTable = {
 		disabled = "HasNoProfiles",
 		arg = "nocurrent",
 	},
-	deldesc = {
-		order = 70,
-		type = "description",
-		name = "\n" .. L["delete_desc"],
-	},
 	delete = {
-		order = 80,
+		order = 70,
 		type = "select",
 		name = L["delete"],
 		desc = L["delete_sub"],
