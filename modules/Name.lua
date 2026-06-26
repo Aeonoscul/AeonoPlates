@@ -38,13 +38,18 @@ function UpdateNameText(frame, data, db)
 
     local r, g, b, a
     if db.classColorEnemyNames and data.isPlayer and not data.isFriend and data.class then
-        local color = RAID_CLASS_COLORS[data.class]
-        if color then
-            r, g, b, a = color.r, color.g, color.b, 1
+        if frame.customName then
+            local color = RAID_CLASS_COLORS[data.class]
+            if color then
+                r, g, b, a = color.r, color.g, color.b, 1
+            end
+        end
+    elseif not data.isOnlyNameMode then
+        if frame.customName then
+            r, g, b, a = 1, 1, 1, 1
         end
     else
-        -- Если классовый цвет не применяется, берём цвет из стандартного frame.name (если есть)
-        if frame.name then
+        if frame.customName then
             r, g, b, a = frame.name:GetTextColor()
         end
     end
