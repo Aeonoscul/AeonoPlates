@@ -37,13 +37,17 @@ function UpdateNameText(frame, data, db)
     local y = data.isOnlyNameMode and db.onlyNameOffsetY or db.nameOffsetY
 
     local r, g, b, a
-    if db.classColorEnemyNames and data.isPlayer and not data.isFriend and data.class then
+    if not data.isOnlyNameMode then
+        r, g, b, a = 1, 1, 1, 1
+    elseif db.classColorEnemyNames and data.isPlayer and not data.isFriend and data.class then
         local color = RAID_CLASS_COLORS[data.class]
         if color then
             r, g, b, a = color.r, color.g, color.b, 1
         end
+        if frame.name then
+            r, g, b, a = frame.name:GetTextColor()
+        end
     else
-        -- Если классовый цвет не применяется, берём цвет из стандартного frame.name (если есть)
         if frame.name then
             r, g, b, a = frame.name:GetTextColor()
         end

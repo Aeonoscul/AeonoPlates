@@ -22,8 +22,8 @@ function UpdateUnitIcon(frame, data, db)
         local parent = frame
 
         if not frame.classIcon then
-            frame.classIcon = parent:CreateTexture(nil, "BACKGROUND")
-            frame.classIcon:SetDrawLayer("BACKGROUND", 7)
+            frame.classIcon = parent:CreateTexture(nil, "OVERLAY")
+            frame.classIcon:SetDrawLayer("OVERLAY", 7)
         end
 
         if frame.classIcon:GetParent() ~= parent then
