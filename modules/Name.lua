@@ -44,7 +44,7 @@ function UpdateNameText(frame, data, db)
                 r, g, b, a = color.r, color.g, color.b, 1
             end
         end
-    elseif not data.isOnlyNameMode then
+    elseif not data.isOnlyNameMode and not (data.isPlayer and db.classColorFriendlyNames ) then
         if frame.customName then
             r, g, b, a = 1, 1, 1, 1
         end
