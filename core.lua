@@ -103,11 +103,6 @@ local function UpdateFrameLevel(frame, data)
     frame:SetFrameLevel(newLevel)
 
     frame._currentOffset = newOffset
-
-    local cb = frame._pureCB
-    if cb and cb.container then
-        cb.container:SetFrameLevel(newLevel)
-    end
 end
 
 -- ============================================

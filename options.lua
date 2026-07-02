@@ -1311,7 +1311,7 @@ local options = {
                     type = "toggle",
                     name = "Показывать иконку",
                     desc = "Показывать иконку заклинания рядом с кастбаром",
-                    order = 77,
+                    order = 76,
                     set = function(info, val)
                         AeonoPlates.db.profile.castBarShowIcon = val;
                         AeonoPlates:RefreshAllPlates()
@@ -1320,28 +1320,87 @@ local options = {
                         return AeonoPlates.db.profile.castBarShowIcon
                     end
                 },
-                castBarIconSide = {
-                    type = "select",
-                    name = "Сторона иконки",
-                    desc = "С какой стороны иконка относительно кастбара",
-                    order = 78,
-                    values = {
-                        LEFT = "LEFT",
-                        RIGHT = "RIGHT"
-                    },
+                castBarIconSize = {
+                    type = "range",
+                    name = "Размер иконки",
+                    desc = "Размер иконки заклинания (ширина = высота)",
+                    order = 77,
+                    min = 4,
+                    max = 64,
+                    step = 1,
                     set = function(info, val)
-                        AeonoPlates.db.profile.castBarIconSide = val;
+                        AeonoPlates.db.profile.castBarIconSize = val;
                         AeonoPlates:RefreshAllPlates()
                     end,
                     get = function(info)
-                        return AeonoPlates.db.profile.castBarIconSide
+                        return AeonoPlates.db.profile.castBarIconSize
+                    end
+                },
+                castBarIconAnchor = {
+                    type = "select",
+                    name = "Привязка иконки",
+                    desc = "Точка привязки иконки относительно кастбара",
+                    order = 78,
+                    values = anchorOptions,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarIconAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarIconAnchor
+                    end
+                },
+                castBarIconRelAnchor = {
+                    type = "select",
+                    name = "Отн. привязка иконки",
+                    desc = "Относительная точка привязки иконки на кастбаре",
+                    order = 79,
+                    values = anchorOptions,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarIconRelAnchor = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarIconRelAnchor
+                    end
+                },
+                castBarIconOffsetX = {
+                    type = "range",
+                    name = "Смещение иконки X",
+                    desc = "Смещение иконки по X",
+                    order = 80,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarIconOffsetX = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarIconOffsetX
+                    end
+                },
+                castBarIconOffsetY = {
+                    type = "range",
+                    name = "Смещение иконки Y",
+                    desc = "Смещение иконки по Y",
+                    order = 81,
+                    min = -200,
+                    max = 200,
+                    step = 1,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.castBarIconOffsetY = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.castBarIconOffsetY
                     end
                 },
                 castBarAnchor = {
                     type = "select",
                     name = "Привязка кастбара",
                     desc = "Точка привязки кастбара к полосе здоровья",
-                    order = 80,
+                    order = 82,
                     values = anchorOptions,
                     set = function(info, val)
                         AeonoPlates.db.profile.castBarAnchor = val;

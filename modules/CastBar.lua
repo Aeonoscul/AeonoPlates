@@ -37,14 +37,9 @@ function UpdateCastBarSettings(cb, db)
         return
     end
 
-    local container = cb.container
-    if not container then
+    local parent = cb:GetParent()
+    if not parent then
         return
-    end
-
-    local parent = container:GetParent()
-    if parent then
-        container:SetFrameLevel(parent:GetFrameLevel())
     end
 
     local anchor = db.castBarAnchor or "CENTER"
@@ -52,58 +47,26 @@ function UpdateCastBarSettings(cb, db)
     local width = db.castBarWidth or 100
     local height = db.castBarHeight or 8
     local showIcon = db.castBarShowIcon
-    local iconSide = db.castBarIconSide or "LEFT"
-
-    container:ClearAllPoints()
-    container:SetPoint(anchor, hb, relAnchor, db.castBarOffsetX, db.castBarOffsetY)
 
     cb:SetStatusBarTexture(db.castBarTex)
 
-    if showIcon then
-        local iconSize = height
-        local iconAnchor, iconParent, iconRelAnchor
-        if iconSide == "LEFT" then
-            iconAnchor = "LEFT"
-            iconParent = container
-            iconRelAnchor = "LEFT"
-        else
-            iconAnchor = "LEFT"
-            iconParent = cb
-            iconRelAnchor = "RIGHT"
-        end
+    -- Привязка cb напрямую к родительскому фрейму
+    cb:ClearAllPoints()
+    cb:SetPoint(anchor, parent, relAnchor, db.castBarOffsetX, db.castBarOffsetY)
+    cb:SetSize(width, height)
 
-        SetIconST(cb.icon, cb.castIcon, iconSize, iconSize, iconAnchor, iconParent, iconRelAnchor, 0, 0, 1)
+    -- Иконка с независимыми настройками
+    if showIcon and cb.icon then
+        local iconSize = db.castBarIconSize or height
+        local iconAnchor = db.castBarIconAnchor or "LEFT"
+        local iconRelAnchor = db.castBarIconRelAnchor or "LEFT"
+        local iconOffsetX = db.castBarIconOffsetX or 0
+        local iconOffsetY = db.castBarIconOffsetY or 0
 
-        if iconSide == "LEFT" then
-            container:SetWidth(width)
-            container:SetHeight(height)
-
-            local barWidth = width - iconSize
-            if barWidth < 1 then
-                barWidth = 1
-            end
-            cb:ClearAllPoints()
-            cb:SetPoint("LEFT", cb.icon, "RIGHT", 0, 0)
-            cb:SetSize(barWidth, height)
-        else
-            container:SetWidth(width)
-            container:SetHeight(height)
-
-            cb:ClearAllPoints()
-            cb:SetPoint("LEFT", container, "LEFT", 0, 0)
-            local barWidth = width - iconSize
-            if barWidth < 1 then
-                barWidth = 1
-            end
-            cb:SetSize(barWidth, height)
-        end
-    else
-        container:SetWidth(width)
-        container:SetHeight(height)
-
-        cb:ClearAllPoints()
-        cb:SetPoint("LEFT", container, "LEFT", 0, 0)
-        cb:SetSize(width, height)
+        SetIconST(cb.icon, cb.castIcon, iconSize, iconSize, iconAnchor, cb, iconRelAnchor, iconOffsetX, iconOffsetY)
+        cb.icon:Show()
+    elseif cb.icon then
+        cb.icon:Hide()
     end
 
     if cb.bg then
@@ -135,10 +98,9 @@ function CreatePureCastBar(plate, db)
     end
 
     local parent = plate.UnitFrame or plate
-    local container = CreateFrame("Frame", nil, parent)
-    container:SetFrameLevel(parent:GetFrameLevel())
 
-    local cb = CreateFrame("StatusBar", nil, container)
+    local cb = CreateFrame("StatusBar", nil, parent)
+    cb:SetFrameLevel(parent:GetFrameLevel())
     cb:SetStatusBarTexture(db.castBarTex)
     cb:SetMinMaxValues(0, 100)
     cb:SetValue(0)
@@ -153,13 +115,12 @@ function CreatePureCastBar(plate, db)
 
     cb.text = cb:CreateFontString(nil, "OVERLAY")
 
-    cb.icon = container:CreateTexture(nil, "TOOLTIP")
+    cb.icon = cb:CreateTexture(nil, "TOOLTIP")
 
-    cb.spark = container:CreateTexture(nil, "TOOLTIP")
+    cb.spark = cb:CreateTexture(nil, "TOOLTIP")
     cb.spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
     cb.spark:SetBlendMode("ADD")
 
-    cb.container = container
     plate._pureCB = cb
 
     UpdateCastBarSettings(cb, db)
@@ -198,17 +159,11 @@ local function CastBarOnUpdateInternal(elapsed)
             cb.fadeTimer = cb.fadeTimer - elapsed
             if cb.fadeTimer <= 0 then
                 cb:Hide()
-                if cb.container then
-                    cb.container:Hide()
-                end
                 cb:SetAlpha(0)
                 toRemove[#toRemove + 1] = cb
             else
                 local fadeAlpha = cb.fadeTimer / db.castBarFadeTime
                 cb:SetAlpha(fadeAlpha)
-                if cb.container then
-                    cb.container:SetAlpha(fadeAlpha)
-                end
             end
         else
             local timeLeft = cb.endTime - now
@@ -317,9 +272,6 @@ function UpdateCastBarState(unit, isStart, isChannel, db)
 
     if not show then
         cb:Hide()
-        if cb.container then
-            cb.container:Hide()
-        end
         activeBars[cb] = nil
         return
     end
@@ -333,9 +285,6 @@ function UpdateCastBarState(unit, isStart, isChannel, db)
 
     if not name or not startTime or not endTime then
         cb:Hide()
-        if cb.container then
-            cb.container:Hide()
-        end
         activeBars[cb] = nil
         return
     end
@@ -366,13 +315,7 @@ function UpdateCastBarState(unit, isStart, isChannel, db)
     end
 
     cb:SetAlpha(1)
-    if cb.container then
-        cb.container:SetAlpha(1)
-    end
     cb:Show()
-    if cb.container then
-        cb.container:Show()
-    end
 
     if cb.notInterruptible then
         ApplyColor(cb, _cachedCastBarColors.shieldBar)
@@ -413,9 +356,6 @@ function HandleCastBarEvent(event, unit, db)
         local plate = C_NamePlate and C_NamePlate.GetNamePlateForUnit(unit)
         if plate and plate._pureCB then
             plate._pureCB:Hide()
-            if plate._pureCB.container then
-                plate._pureCB.container:Hide()
-            end
             activeBars[plate._pureCB] = nil
         end
     end
@@ -424,9 +364,6 @@ end
 function ClearActiveCastBars()
     for cb in pairs(activeBars) do
         cb:Hide()
-        if cb.container then
-            cb.container:Hide()
-        end
         cb:SetAlpha(0)
     end
     activeBars = {}

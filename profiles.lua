@@ -87,15 +87,12 @@ defaults = {
         castBarTex = "Interface\\TargetingFrame\\UI-StatusBar",
         castBarFadeTime = 0.5,
         castBarHeight = 14,
-        castBarWidth = 120,
+        castBarWidth = 110,
         castBarShowIcon = true,
-        castBarIconSide = "LEFT",
-        castBarIconOffsetX = 0,
-        castBarIconOffsetY = 0,
         castBarAnchor = "TOP",
         castBarRelativePoint = "BOTTOM",
-        castBarOffsetX = 0,
-        castBarOffsetY = -3,
+        castBarOffsetX = 5,
+        castBarOffsetY = 5,
         castBarColor = {1, 1, 0, 1},
         castBarSuccessColor = {0, 1, 0, 1},
         castBarFailedColor = {1, 0, 0, 1},
@@ -109,7 +106,12 @@ defaults = {
         castNameOffsetX = 0,
         castNameOffsetY = 0,
         castBarSparkWidth = 20,
-        castBarSparkHeightMultiplier = 2
+        castBarSparkHeightMultiplier = 2,
+        castBarIconSize = 15,
+        castBarIconAnchor = "RIGHT",
+        castBarIconRelAnchor = "LEFT",
+        castBarIconOffsetX = 0,
+        castBarIconOffsetY = 0,
     }
 }
 
