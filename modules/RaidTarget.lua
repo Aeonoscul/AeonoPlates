@@ -11,7 +11,6 @@ function UpdateRaidTarget(frame, data, db)
     end
     local rtf = frame.RaidTargetFrame
 
-    -- Кэшируем позицию
     if rtf.lastAnchor ~= db.raidTargetAnchor or rtf.lastRelAnchor ~= db.raidTargetRelAnchor or rtf.lastParent ~= parent or
         rtf.lastX ~= db.raidTargetOffsetX or rtf.lastY ~= db.raidTargetOffsetY then
         rtf:ClearAllPoints()

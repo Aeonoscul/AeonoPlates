@@ -111,7 +111,7 @@ defaults = {
         castBarIconAnchor = "RIGHT",
         castBarIconRelAnchor = "LEFT",
         castBarIconOffsetX = 0,
-        castBarIconOffsetY = 0,
+        castBarIconOffsetY = 0
     }
 }
 

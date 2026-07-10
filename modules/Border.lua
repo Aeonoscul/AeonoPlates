@@ -45,10 +45,10 @@ function UpdateCustomBorder(frame, data, db)
         frame.customBorder = CreateFrame("Frame", nil, frame)
         frame._lastBorderTex = nil
         -- Граница не должна перекрывать другие фреймы → уровень 0
-        frame.customBorder:SetFrameLevel(frame.healthBar:GetFrameLevel())
+        frame.customBorder:SetFrameLevel(frame.healthBar:GetFrameLevel() + 1)
     else
         -- На случай, если уровень был изменён ранее (например, сменой профиля)
-        frame.customBorder:SetFrameLevel(frame.healthBar:GetFrameLevel())
+        frame.customBorder:SetFrameLevel(frame.healthBar:GetFrameLevel() + 1)
     end
 
     UpdateBorderGeometry(frame, db)
@@ -59,9 +59,7 @@ function UpdateCustomBorder(frame, data, db)
         return
     end
 
-    if not _cachedBorderColors.targetColor then
-        RefreshBorderColorCache(db)
-    end
+    RefreshBorderColorCache(db)
 
     local colors = _cachedBorderColors
     local isTarget = UnitIsUnit(data.unit, "target")

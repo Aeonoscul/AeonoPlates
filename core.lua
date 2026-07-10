@@ -18,9 +18,6 @@ function AeonoPlates:ApplyCVars()
     SetCVar("nameplateShowOnlyNames", db.onlyNameMode, "nameplateShowOnlyNames")
 end
 
--- ============================================
--- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ХУКОВ
--- ============================================
 local function HideCastBar(cb)
     local unit = cb.unit or cb.displayedUnit or (cb.UnitFrame and cb.UnitFrame.unit)
     if unit and unit:find("nameplate") then
@@ -66,12 +63,9 @@ local function HideBorder(frame)
         end
     end
 end
--- ============================================
--- FRAME LEVEL
--- ============================================
+
 local _prevMouseoverFrame = nil
 local _prevTargetFrame = nil
-
 local function UpdateFrameLevel(frame, data)
     if not frame then
         return
@@ -105,9 +99,6 @@ local function UpdateFrameLevel(frame, data)
     frame._currentOffset = newOffset
 end
 
--- ============================================
--- ОБРАБОТКА PLAYER SELF
--- ============================================
 local function UpdatePlayerSelf(frame)
     if not UnitIsUnit(frame.unit, "player") then
         return false
@@ -138,16 +129,12 @@ local function UpdatePlayerSelf(frame)
     return true
 end
 
--- ============================================
--- UPDATE STYLE — ГЛАВНАЯ ФУНКЦИЯ СТИЛИЗАЦИИ
--- ============================================
 function AeonoPlates:UpdateStyle(frame, unit)
     local db = self.db.profile
     if not unit or not UnitExists(unit) then
         return
     end
 
-    -- Player self
     if UpdatePlayerSelf(frame) then
         return
     end
@@ -159,12 +146,11 @@ function AeonoPlates:UpdateStyle(frame, unit)
         return
     end
 
-    local data = GetUnitData(unit) -- теперь передаём unit
+    local data = GetUnitData(unit)
     if not data then
         return
     end
 
-    -- Скрытие нативного UI
     local cb = frame.castBar or (frame.UnitFrame and frame.UnitFrame.castBar)
     if cb then
         HideCastBar(cb)
@@ -174,7 +160,6 @@ function AeonoPlates:UpdateStyle(frame, unit)
     HideBuffs(frame)
     HideBorder(frame)
 
-    -- Вызов модулей
     UpdateHealthBarTexture(frame, data, db)
     UpdateNameText(frame, data, db)
     UpdateHealthValueText(frame, data, db)
@@ -190,9 +175,6 @@ function AeonoPlates:UpdateStyle(frame, unit)
     CreatePureCastBar(frame, db)
 end
 
--- ============================================
--- ПОЛНЫЙ РЕФРЕШ ВСЕХ НЕЙМПЛЕЙТОВ
--- ============================================
 function AeonoPlates:RefreshAllPlates()
     local frames = C_NamePlate.GetNamePlates()
     for i = 1, #frames do
@@ -206,9 +188,6 @@ function AeonoPlates:RefreshAllPlates()
     end
 end
 
--- ============================================
--- ЭКСПОРТ / ИМПОРТ ПРОФИЛЕЙ
--- ============================================
 function AeonoPlates:ExportProfile()
     if not LibDeflate or not AceSerializer then
         self:Print("Ошибка: библиотеки сжатия не загружены.")
@@ -247,7 +226,7 @@ function AeonoPlates:ImportProfile(encodedStr)
         self:Print("Ошибка десериализации профиля.")
         return false
     end
-    -- Заменяем текущий профиль
+
     local profile = self.db.profile
     for k in pairs(profile) do
         profile[k] = nil
@@ -255,7 +234,7 @@ function AeonoPlates:ImportProfile(encodedStr)
     for k, v in pairs(data) do
         profile[k] = v
     end
-    -- Применяем все изменения как при смене профиля (аналог OnProfileChanged)
+
     ClearActiveCastBars()
     RefreshBorderColorCache(self.db.profile)
     RefreshCastBarColorCache(self.db.profile)
@@ -265,16 +244,15 @@ function AeonoPlates:ImportProfile(encodedStr)
     return true
 end
 
--- ============================================
--- GUI-ОКНА ДЛЯ ЭКСПОРТА/ИМПОРТА
--- ============================================
 function AeonoPlates:ShowExportFrame(exportStr)
     local frame = AceGUI:Create("Frame")
     frame:SetTitle("Экспорт профиля")
     frame:SetWidth(600)
     frame:SetHeight(400)
     frame:SetLayout("Flow")
-    frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
+    frame:SetCallback("OnClose", function(widget)
+        AceGUI:Release(widget)
+    end)
 
     local editBox = AceGUI:Create("MultiLineEditBox")
     editBox:SetLabel("Скопируйте строку ниже:")
@@ -288,10 +266,9 @@ function AeonoPlates:ShowExportFrame(exportStr)
     editBox.editBox:SetFocus()
 
     editBox.button:Hide()
-    
+
     frame:AddChild(editBox)
 
-    -- Нет дополнительных кнопок, только крестик в заголовке
     frame:Show()
 end
 
@@ -301,14 +278,15 @@ function AeonoPlates:ShowImportFrame()
     frame:SetWidth(600)
     frame:SetHeight(400)
     frame:SetLayout("Flow")
-    frame:SetCallback("OnClose", function(widget) AceGUI:Release(widget) end)
+    frame:SetCallback("OnClose", function(widget)
+        AceGUI:Release(widget)
+    end)
 
     local editBox = AceGUI:Create("MultiLineEditBox")
     editBox:SetLabel("Вставьте строку для импорта:")
     editBox:SetNumLines(15)
     editBox:SetFullWidth(true)
     editBox:SetHeight(300)
-    -- Переопределяем её действие
     editBox.button:SetScript("OnClick", function()
         local text = editBox:GetText()
         if AeonoPlates:ImportProfile(text) then
@@ -319,9 +297,7 @@ function AeonoPlates:ShowImportFrame()
     frame:AddChild(editBox)
     frame:Show()
 end
--- ============================================
--- ОБРАБОТЧИКИ СОБЫТИЙ
--- ============================================
+
 function AeonoPlates:OnNamePlateAdded(event, unit)
     if unit and unit:find("nameplate") then
         local frame = C_NamePlate.GetNamePlateForUnit(unit)
@@ -329,7 +305,6 @@ function AeonoPlates:OnNamePlateAdded(event, unit)
             local targetFrame = frame.UnitFrame or frame
             self:UpdateStyle(targetFrame, unit)
             UpdateHealthValues(targetFrame, unit, self.db.profile)
-            -- Проверяем, не кастует ли юнит уже сейчас
             if UnitCastingInfo(unit) then
                 UpdateCastBarState(unit, true, false, self.db.profile)
             elseif UnitChannelInfo(unit) then
@@ -462,18 +437,12 @@ function AeonoPlates:OnDuelEvent()
     self:RefreshAllPlates()
 end
 
--- ============================================
--- ОБРАБОТЧИК УДАЛЕНИЯ НЕЙМПЛЕЙТА
--- ============================================
 function AeonoPlates:OnNamePlateRemoved(event, unit)
     if unit and unit:find("nameplate") then
         HandleCastBarEvent("NAME_PLATE_UNIT_REMOVED", unit, self.db.profile)
     end
 end
 
--- ============================================
--- ОБРАБОТЧИКИ СОБЫТИЙ КАСТБАРА
--- ============================================
 function AeonoPlates:OnUnitSpellcastStart(event, unit)
     HandleCastBarEvent(event, unit, self.db.profile)
 end
@@ -498,19 +467,15 @@ function AeonoPlates:OnUnitSpellcastFailed(event, unit)
     HandleCastBarEvent(event, unit, self.db.profile)
 end
 
--- ============================================
--- ЖИЗНЕННЫЙ ЦИКЛ
--- ============================================
 function AeonoPlates:RegisterStandardProfiles()
     if not standardProfiles then
         return
     end
     local base = defaults.profile
-    local profiles = self.db.profiles -- таблица профилей
+    local profiles = self.db.profiles
 
     for name, overrides in pairs(standardProfiles) do
         if not profiles[name] then
-            -- Создаём копию базовых настроек
             local data = {}
             for k, v in pairs(base) do
                 data[k] = v
@@ -524,22 +489,13 @@ function AeonoPlates:RegisterStandardProfiles()
 end
 
 function AeonoPlates:OnInitialize()
-    -- Инициализация БД
     self.db = LibStub("AceDB-3.0"):New("AeonoPlatesDB", defaults, "Default")
     self:RegisterStandardProfiles()
-
-    -- Регистрация слаш-команд
     self:RegisterChatCommand("aep", "OpenOptions")
     self:RegisterChatCommand("aeonoplates", "OpenOptions")
-
-    -- Инициализация LSM
     InitLSM()
-
-    -- Инициализация кэшей цветов
     RefreshBorderColorCache(self.db.profile)
     RefreshCastBarColorCache(self.db.profile)
-
-    -- Регистрация колбэка на смену профиля (для немедленного рефреша)
     self.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
     self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
     self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
@@ -553,10 +509,7 @@ function AeonoPlates:OnProfileChanged(event, database, newProfileKey)
     self:RefreshAllPlates()
 end
 
--- ... весь код до OnEnable без изменений ...
-
 function AeonoPlates:OnEnable()
-    -- Регистрация настроек в AceConfig (здесь options.lua уже загружен)
     local options = self:GetOptionsTable()
     if options then
         LibStub("AceConfig-3.0"):RegisterOptionsTable("AeonoPlates", options)
@@ -573,11 +526,9 @@ function AeonoPlates:OnEnable()
                 handler = standardProfile.handler,
                 args = {}
             }
-            -- Копируем стандартные аргументы
             for k, v in pairs(standardProfile.args) do
                 profileGroup.args[k] = v
             end
-            -- Добавляем кнопки экспорта и импорта (порядок 100 и 110, чтобы были внизу)
             profileGroup.args.export = {
                 type = "execute",
                 name = "Экспорт профиля",
@@ -600,7 +551,6 @@ function AeonoPlates:OnEnable()
         end
     end
 
-    -- Регистрация событий (без изменений)
     self:RegisterEvent("NAME_PLATE_UNIT_ADDED", "OnNamePlateAdded")
     self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", "OnNamePlateRemoved")
     self:RegisterEvent("UNIT_COMBAT", "OnUnitCombat")
@@ -613,7 +563,6 @@ function AeonoPlates:OnEnable()
     self:RegisterEvent("PLAYER_DUEL_START", "OnDuelEvent")
     self:RegisterEvent("PLAYER_DUEL_FINISHED", "OnDuelEvent")
     self:RegisterEvent("UNIT_NAME_UPDATE", "OnUnitNameUpdate")
-
     self:RegisterEvent("UNIT_SPELLCAST_START", "OnUnitSpellcastStart")
     self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START", "OnUnitSpellcastChannelStart")
     self:RegisterEvent("UNIT_SPELLCAST_STOP", "OnUnitSpellcastStop")
@@ -623,7 +572,6 @@ function AeonoPlates:OnEnable()
 
     self:RegisterMinimapIcon()
 
-    -- Хуки (без изменений)
     if CompactUnitFrame_UpdateName then
         self:SecureHook("CompactUnitFrame_UpdateName", function(frame)
             HideName(frame)
@@ -653,12 +601,10 @@ function AeonoPlates:OnEnable()
         local lastCheck = 0
         pollFrame:SetScript("OnUpdate", function()
             local now = GetTime()
-            if now - lastCheck < 0.2 then -- ~10 FPS проверок
+            if now - lastCheck < 0.2 then
                 return
             end
             lastCheck = now
-
-            -- 1. Обработка снятия маусовера/цели (было)
             if _prevMouseoverFrame then
                 local unit = _prevMouseoverFrame.unit or
                                  (_prevMouseoverFrame.UnitFrame and _prevMouseoverFrame.UnitFrame.unit)
@@ -715,13 +661,9 @@ function AeonoPlates:OnDisable()
         self._pollFrame = nil
     end
 
-    -- Очищаем активные бары (OnUpdate-фрейм сам скроется)
     ClearActiveCastBars()
 end
 
--- ============================================
--- РЕГИСТРАЦИЯ ИКОНКИ МИНИКАРТЫ
--- ============================================
 function AeonoPlates:RegisterMinimapIcon()
     local icon = LibStub("LibDBIcon-1.0", true)
     if not icon then
@@ -748,16 +690,10 @@ function AeonoPlates:RegisterMinimapIcon()
     icon:Register("AeonoPlates", dataobj, self.db.profile)
 end
 
--- ============================================
--- ПОЛУЧЕНИЕ ТАБЛИЦЫ НАСТРОЕК
--- ============================================
 function AeonoPlates:GetOptionsTable()
     return self.optionsTable
 end
 
--- ============================================
--- ОТКРЫТИЕ НАСТРОЕК
--- ============================================
 function AeonoPlates:OpenOptions(input)
     LibStub("AceConfigDialog-3.0"):Open("AeonoPlates")
 end

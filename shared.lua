@@ -163,7 +163,7 @@ onlyNameOptions = {
     [0] = "Выключено",
     [1] = "Союзники",
     [2] = "Противники",
-    [3] = "Все",
+    [3] = "Все"
 }
 
 -- Список флагов шрифта
@@ -413,9 +413,7 @@ end
 
 -- Переиспользуемая таблица для данных юнита
 local dataCache = {}
-
 -- Сбор данных о юните
--- shared.lua
 function GetUnitData(unit) -- принимаем unit, а не frame
     if not unit or not UnitExists(unit) then
         return nil
