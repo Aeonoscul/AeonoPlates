@@ -193,7 +193,6 @@ local function CastBarOnUpdateInternal(elapsed)
             end
 
             if (not cb.isChannel and now >= cb.endTime) or (cb.isChannel and now <= cb.startTime) then
-                ApplyColor(cb, _cachedCastBarColors.successBar)
                 cb.isFading = true
                 if not cb.fadeTimer then
                     cb.fadeTimer = db.castBarFadeTime
@@ -344,6 +343,20 @@ function HandleCastBarEvent(event, unit, db)
         local cb = plate and plate._pureCB
         if cb and cb:IsShown() and not cb.isFading then
             ApplyColor(cb, _cachedCastBarColors.failedBar)
+            if cb.text then
+                cb.text:SetText("Прервано")
+            end
+            cb.isFading = true
+            cb.fadeTimer = db and db.castBarFadeTime or 0.3
+            if not updateFrameActive then
+                SetUpdateFrameActive(true)
+            end
+        end
+    elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+        local plate = C_NamePlate and C_NamePlate.GetNamePlateForUnit(unit)
+        local cb = plate and plate._pureCB
+        if cb and cb:IsShown() then
+            ApplyColor(cb, _cachedCastBarColors.successBar)
             cb.isFading = true
             cb.fadeTimer = db and db.castBarFadeTime or 0.3
             if not updateFrameActive then

@@ -818,6 +818,7 @@ local options = {
                     set = function(info, r, g, b, a)
                         local c = AeonoPlates.db.profile.borderTargetColor
                         c[1], c[2], c[3], c[4] = r, g, b, a or 1
+                        RefreshBorderColorCache(AeonoPlates.db.profile)
                         AeonoPlates:RefreshAllPlates()
                     end,
                     get = function(info)
@@ -834,6 +835,7 @@ local options = {
                     set = function(info, r, g, b, a)
                         local c = AeonoPlates.db.profile.borderMouseoverColor
                         c[1], c[2], c[3], c[4] = r, g, b, a or 1
+                        RefreshBorderColorCache(AeonoPlates.db.profile)
                         AeonoPlates:RefreshAllPlates()
                     end,
                     get = function(info)
@@ -850,6 +852,7 @@ local options = {
                     set = function(info, r, g, b, a)
                         local c = AeonoPlates.db.profile.borderCombatColor
                         c[1], c[2], c[3], c[4] = r, g, b, a or 1
+                        RefreshBorderColorCache(AeonoPlates.db.profile)
                         AeonoPlates:RefreshAllPlates()
                     end,
                     get = function(info)
@@ -866,6 +869,7 @@ local options = {
                     set = function(info, r, g, b, a)
                         local c = AeonoPlates.db.profile.borderDefaultColor
                         c[1], c[2], c[3], c[4] = r, g, b, a or 1
+                        RefreshBorderColorCache(AeonoPlates.db.profile)
                         AeonoPlates:RefreshAllPlates()
                     end,
                     get = function(info)

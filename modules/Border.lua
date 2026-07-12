@@ -59,8 +59,6 @@ function UpdateCustomBorder(frame, data, db)
         return
     end
 
-    RefreshBorderColorCache(db)
-
     local colors = _cachedBorderColors
     local isTarget = UnitIsUnit(data.unit, "target")
     local isMouseover = UnitIsUnit(data.unit, "mouseover")

@@ -467,6 +467,10 @@ function AeonoPlates:OnUnitSpellcastFailed(event, unit)
     HandleCastBarEvent(event, unit, self.db.profile)
 end
 
+function AeonoPlates:OnUnitSpellcastSucceeded(event, unit)
+    HandleCastBarEvent(event, unit, self.db.profile)
+end
+
 function AeonoPlates:RegisterStandardProfiles()
     if not standardProfiles then
         return
@@ -569,6 +573,7 @@ function AeonoPlates:OnEnable()
     self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP", "OnUnitSpellcastChannelStop")
     self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED", "OnUnitSpellcastInterrupted")
     self:RegisterEvent("UNIT_SPELLCAST_FAILED", "OnUnitSpellcastFailed")
+    self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "OnUnitSpellcastSucceeded")
 
     self:RegisterMinimapIcon()
 
