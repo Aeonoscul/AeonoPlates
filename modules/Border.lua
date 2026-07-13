@@ -41,14 +41,16 @@ function UpdateCustomBorder(frame, data, db)
         return
     end
 
+    local borderLevel = 1
+    if db.borderBelowFrame == true then
+        borderLevel = 0
+    end
     if not frame.customBorder then
         frame.customBorder = CreateFrame("Frame", nil, frame)
         frame._lastBorderTex = nil
-        -- Граница не должна перекрывать другие фреймы → уровень 0
-        frame.customBorder:SetFrameLevel(frame.healthBar:GetFrameLevel() + 1)
+        frame.customBorder:SetFrameLevel(frame.healthBar:GetFrameLevel() + borderLevel)
     else
-        -- На случай, если уровень был изменён ранее (например, сменой профиля)
-        frame.customBorder:SetFrameLevel(frame.healthBar:GetFrameLevel() + 1)
+        frame.customBorder:SetFrameLevel(frame.healthBar:GetFrameLevel() + borderLevel)
     end
 
     UpdateBorderGeometry(frame, db)

@@ -777,6 +777,19 @@ local options = {
                         return AeonoPlates.db.profile.borderTexture
                     end
                 },
+                borderBelowFrame = {
+                    type = "toggle",
+                    name = "Граница под фреймом",
+                    desc = "Опускает уровень границы на уровень полосы хп",
+                    order = 15,
+                    set = function(info, val)
+                        AeonoPlates.db.profile.borderBelowFrame = val;
+                        AeonoPlates:RefreshAllPlates()
+                    end,
+                    get = function(info)
+                        return AeonoPlates.db.profile.borderBelowFrame
+                    end
+                },
                 borderPadding = {
                     type = "range",
                     name = "Размер границы",

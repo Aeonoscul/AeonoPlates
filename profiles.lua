@@ -58,6 +58,7 @@ defaults = {
         borderMouseoverColor = {0, 1, 1, 1},
         borderCombatColor = {1, 0, 0, 1},
         borderDefaultColor = {0, 0, 0, 1},
+        borderBelowFrame = false,
 
         threatHighColor = {0, 1, 0, 1},
         threatLowColor = {1, 0, 0, 1},
@@ -78,7 +79,7 @@ defaults = {
 
         globalFrameScale = 1,
         targetFrameScale = 1.2,
-        petFrameScale = 0.8,
+        petFrameScale = 1,
 
         friendlyPlayerCastBar = true,
         enemyPlayerCastBar = true,
